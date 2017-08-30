@@ -1,0 +1,19 @@
+<!--pages/inputPlatNum/inputPlatNum.wxml-->
+<view class="content">
+  <text class="input_plate_number">输入车牌号</text>
+  <view class="input">
+    <input class="phont_et" bindinput="bindKeyInput" maxlength="7"/>
+  </view>
+  <view class="btn-area">
+    <button  bindtap="collect_gifts" class="collect_gifts_btn" open-type="{{getPhoneNumber}}" bindgetphonenumber= "{{getPhoneNumber}}">领取礼物</button>
+  </view>
+
+<!--wxapp-toast start-->
+  <view class="wxapp-toast-content-box" wx:if="{{isShowToast}}">
+    <view class="wxapp-toast-content">
+      <view class="wxapp-toast-content-text"> {{toastText}} </view>
+    </view>
+  </view>
+  <!--wxapp-toast end-->
+
+</view>

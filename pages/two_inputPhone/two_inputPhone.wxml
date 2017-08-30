@@ -1,0 +1,10 @@
+<!--pages/inputPhone/inputPhone.wxml-->
+<view class="content">
+  <text class="input_phone_number">输入手机号码</text>
+  <view class="input">
+    <input class="phont_et" type="number" bindinput="bindKeyInput" maxlength="11" />
+  </view>
+  <view class="btn-area">
+    <button bindtap="collect" class="collect_gifts_btn">立即领取</button>
+  </view>
+</view>

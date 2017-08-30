@@ -1,0 +1,9 @@
+<!--pages/success/success.wxml-->
+<view class="content">
+  <view class="classname">
+    <image src="https://img.ejiayou.com/experience_app_img/gift.png" class="gift_image"/>
+  </view>
+  <view class="success_text">
+    <text>请前往收银台领取礼物</text>
+  </view>
+</view>

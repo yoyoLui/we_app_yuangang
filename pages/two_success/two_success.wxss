@@ -1,0 +1,25 @@
+/* pages/success/success.wxss */
+.content{
+ flex: 1;
+  display: flex;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  background-size: cover
+}
+.gift_image{
+  position: absolute;
+  left: 120rpx;
+  top: 200rpx;
+  width: 64px;
+  height: 64px;
+}
+.success_text{
+  position: absolute;
+  left: 160rpx;
+  top: 380rpx;
+  font-size: 40rpx;
+  font-weight: bold;
+}
+

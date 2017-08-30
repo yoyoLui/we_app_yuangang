@@ -1,0 +1,9 @@
+<view class="container">
+  <!-- <view class="bg_view" style="width:100%;height:100%;"> -->
+    <image src="https://img.ejiayou.com/experience_app_img/image_background.jpg" class="bg-view-image"></image>
+  <!-- </view> -->
+  <view class="">
+    <image wx:if="{{isSuccess_notRepeat}}" class="image_success" src="https://img.ejiayou.com/experience_app_img/image_success.png"></image>
+    <image wx:else class="image_repeat" src="https://img.ejiayou.com/experience_app_img/image_repeat.png"></image>
+  </view>
+</view>

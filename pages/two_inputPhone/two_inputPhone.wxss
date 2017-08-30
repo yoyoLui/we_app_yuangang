@@ -1,0 +1,32 @@
+/* pages/two_inputPhone/two_inputPhone.wxss *//* pages/inputPhone/inputPhone.wxss */
+.content{
+  width: 100%;
+  height: 100%;
+}
+.input_phone_number{
+  display: block;
+  margin-left: 50rpx;
+  margin-top: 100rpx;
+  font-size: 35rpx;
+  color: #000;
+}
+.input{
+  height: 80rpx;
+  background: #fff;
+  margin-left: 50rpx;
+  margin-right: 50rpx;
+  margin-top: 20rpx;
+  border: 1rpx solid #ccc;
+}
+.collect_gifts_btn{
+  margin-left: 50rpx;
+  margin-right: 50rpx;
+  margin-top: 100rpx;
+}
+.phont_et{
+  height: 80rpx;
+  line-height: 80rpx;
+  width: 100%;
+  align-self: center;
+  padding-left: 20rpx;
+}

@@ -1,0 +1,64 @@
+.container {
+  padding: 0;
+}
+
+button.one_button {
+  width: 256rpx;
+  height: 256rpx;
+  border-radius: 128rpx;
+  line-height: 256rpx;
+  background-color: #feb311;
+  font-size: 45rpx;
+  font-weight: bold;
+  color: white;
+  /* left: -128rpx; */
+  left: 50%;
+  margin-left: -128rpx;
+}
+
+view.bg_view {
+  height: auto;
+}
+.bg-view-image{
+  width:100% ;
+  height:100% ;
+  position:absolute ;
+  z-index:1 ;
+  left:0 ;
+  right:0 ;
+  top:0 ;
+  bottom:0 ;
+}
+
+view.card_view image.heading {
+  height: auto;
+}
+
+view.card_view image.heading {
+  width: 536rpx;
+  margin-top: 74rpx;
+  left: 50%;
+  margin-left: -268rpx;
+
+}
+
+view.card_view image.redpacket {
+  width: 606rpx;
+  margin-top: 310rpx;
+  left: 50%;
+  margin-left: -303rpx;
+}
+
+view.card_view, view.card_view image {
+  position: absolute;
+  z-index: 2;
+}
+
+view.button_view, view.button_view button {
+  position: absolute;
+  z-index: 3;
+}
+
+view.button_view button {
+  margin-top: 624rpx;
+}

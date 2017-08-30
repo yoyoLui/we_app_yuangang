@@ -1,0 +1,22 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/app_apply/app_apply",
+    "pages/record/record",
+    "pages/upload/upload",
+
+    "pages/one_cardReceived/one_cardReceived",
+    "pages/one_getCard/one_getCard",
+    "pages/one_phoneInput/one_phoneInput",
+
+    "pages/two_inputPlatNum/two_inputPlatNum",
+    "pages/two_inputPhone/two_inputPhone",
+    "pages/two_success/two_success"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "元岗加油站",
+    "navigationBarTextStyle": "black"
+  }
+}
