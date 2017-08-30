@@ -274,14 +274,13 @@ Page({
     console.log('有进入initController事件');
     var that = this;
     app.decryptedData(function () {
-      console.log('进入decryptedData回调');
       app.initView(function (res) {
         app.user_info_data.is_new = res.data.is_new;
         app.toast.is_repeat = res.data.is_repeat;
         app.user_info_data.user_id = res.data.user_id;
         app.user_info_data._k = res.data._k;
         app.toast.not_access = res.data.content;
-      
+     
         //输入手机号页面
         if (res.type == 1) {
           app.toast.old_user_not_access_msg = res.msg;

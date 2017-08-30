@@ -14,9 +14,9 @@ Page({
   onLoad: function () {
     wx.hideLoading();
     var that = this;
-   
-    if (app.user_info_data.mobile == '' || app.user_info_data.mobile == undefined) {
-      //授权
+
+    if (app.user_info_data.mobile == '' && app.user_info_data.is_new == 1) {
+      //授权按钮
       that.setData({
         is_open_getPhoneNumber: true
       });
@@ -25,27 +25,25 @@ Page({
         is_open_getPhoneNumber: false
       });
     }
-    if (app.user_info_data.is_new == 0) {//营运车使用普通button
-      that.setData({
-        is_open_getPhoneNumber: false
-      });
-    }
+    // if (app.user_info_data.is_new == 0) {//营运车不参与活动，走普通button
+    //   that.setData({
+    //     is_open_getPhoneNumber: false
+    //   });
+    // }
   },
 
   //普通button
   //点击form事件
-  buttonClick: function (e) {//有手机号
+  buttonClick: function (e) {//普通按钮
     console.log('获取formId=' + e.detail.formId);
     app.formData.formId = e.detail.formId;
-    //埋点
     if (app.user_info_data.is_new == 0) { //营运车
+      //埋点
       app.defaultActivity('E8uTF9 ');
-      wx.showModal({
-        title: '提示',
-        content: app.toast.not_access,
-      });
+      app.showToast(app.toast.not_access, this, 2000);
       return;
     } else {                              //私家车
+      //埋点
       app.defaultActivity('Jv8mGH');
       //调用领取接口
       app.decryptedData(function () {
@@ -74,31 +72,29 @@ Page({
         });
       });
     }
-   
-   
+
+
   },
 
   //授权butttn
   //点击form提交事件
   getFormId: function (e) {
-    //埋点
+    //埋点-点击领取按钮人数
     if (app.user_info_data.is_new == 0) { //营运车(不会出现)
       app.defaultActivity('E8uTF9 ');
     } else {                              //私家车
       app.defaultActivity('Jv8mGH');
     }
+    //埋点-弹出授权弹框
+    app.defaultActivity('mo9Y3N');
+    debugger;
     console.log('获取formId=' + e.detail.formId);
     app.formData.formId = e.detail.formId;
-    //埋点-点击领取人数
-    app.defaultActivity('Jv8mGH');
-
   },
   //点击领取按钮——授权登录
   getPhoneNumber: function (e) {//没有手机号
-    //埋点-弹出授权弹框
-    app.defaultActivity('mo9Y3N');
+    debugger;
     var that = this;
-
     if (e.detail.encryptedData && e.detail.iv) {//用户授权
       wx.showLoading({
         title: '授权中',
@@ -112,36 +108,37 @@ Page({
           console.log('授权点击-登录成功');
           console.log(JSON.stringify(res.code));
           app.login_data.code = res.code;
-          app.decryptedData_getMobile(function () {
-            if (!app.getPhoneNum.is_auth) {//解密手机号失败
+          app.decryptedData_getMobile(function (res_getMobile) {
+            if (app.getPhoneNum.is_auth == 1) {//解密手机号成功
+              //更新过缓存，调用领取接口
+              app.receiveCard(function (res) {
+                if (res.ret == 0) {//新用户并且成功领取
+                  wx.redirectTo({
+                    url: '../one_cardReceived/one_cardReceived',
+                  })
+                } else {
+                  if (res.ret != undefined) {
+                    wx.showModal({
+                      title: '提示',
+                      content: res.msg,
+                      showCancel: false
+                    })
+                  } else {
+                    wx.showModal({
+                      title: '提示',
+                      content: '服务器错误',
+                      showCancel: false
+                    })
+                  }
+                }
+              });
+            } else {//解密失败
+              if (res_getMobile.ret != 0) {
+                app.showToast(res_getMobile.msg,this,2000);
+              }
               wx.redirectTo({
                 url: '../one_phoneInput/one_phoneInput',
               })
-            } else {
-              app.decryptedData(function () {
-                //解密成功，调用领取接口
-                app.receiveCard(function (res) {
-                  if (res.ret == 0) {//新用户并且成功领取
-                    wx.redirectTo({
-                      url: '../one_cardReceived/one_cardReceived',
-                    })
-                  } else {
-                    if (res.ret != undefined) {
-                      wx.showModal({
-                        title: '提示',
-                        content: res.msg,
-                        showCancel: false
-                      })
-                    } else {
-                      wx.showModal({
-                        title: '提示',
-                        content: '服务器错误',
-                        showCancel: false
-                      })
-                    }
-                  }
-                });
-              });
             }
           });
         },

@@ -23,7 +23,7 @@ App({
   },
   toast: {
     is_repeat: 0,
-    not_access:''
+    not_access: ''
   },
   getPhoneNum: {
     is_auth: 0
@@ -143,13 +143,13 @@ App({
             icon: 'success',
             duration: 1000
           })
-          
+
         } else {
           if (res.ret == undefined) {
             wx.showModal({
               title: '提示',
               content: '服务器错误',
-              showCancel:false
+              showCancel: false
             })
           } else {
             wx.showModal({
@@ -243,13 +243,15 @@ App({
     wx.getStorage({
       key: 'user_info_data',
       success: function (res) {
-        console.log('getStorage=' + JSON.stringify(res));
-        that.user_info_data.user_id = res.data.user_id;
-        that.user_info_data.union_id = res.data.union_id;
-        that.user_info_data.open_id = res.data.open_id;
-        that.user_info_data.mobile = res.data.mobile;
-        if (fn) {
-          fn();
+        if (res) {
+          console.log('getStorage=' + JSON.stringify(res));
+          that.user_info_data.user_id = res.data.user_id;
+          that.user_info_data.union_id = res.data.union_id;
+          that.user_info_data.open_id = res.data.open_id;
+          that.user_info_data.mobile = res.data.mobile;
+          if (fn) {
+            fn();
+          }
         }
       },
       fail: function (failRes) {
@@ -272,12 +274,15 @@ App({
               that.user_info_data.mobile = res.data.mobile;
               wx.setStorage({
                 key: "user_info_data",
-                data: res.data
+                data: res.data,
+                complete:function(){
+                  if (fn) {
+                    fn();
+                  }
+                }
               })
-              if (fn) {
-                fn();
-              }
-            }else{
+           
+            } else {
               if (res.ret == undefined) {
                 wx.showModal({
                   title: '提示',
@@ -315,32 +320,43 @@ App({
       },
       success: function (res) {
         res = res.data;
-        //正常
         if (res.ret == 0) {
-
+          console.log('解密手机号 res=' + JSON.stringify(res));
           that.user_info_data.mobile = res.data.mobile;
           that.user_info_data._k = res.data._k;
           that.getPhoneNum.is_auth = 1;
-          if (fn) {
-            fn();
-          }
+          //更新缓存
+          wx.getStorage({
+            key: 'user_info_data',
+            success: function (stg_data) {
+              var stg;
+              stg = stg_data.data;
+              if (res.data.user_id) {
+                stg.user_id = res.data.user_id;
+              }
+              if (res.data.mobile) {
+                stg.mobile = res.data.mobile;
+              }
+              wx.setStorage({
+                key: 'user_info_data',
+                data: stg,
+                complete:function(){
+                  if (fn) {
+                    fn(res);
+                  }
+                }
+              })
+            },
+            fail:function(){
+              if (fn) {
+                fn(res);
+              }
+            }
+          })
         } else {//解密失败
           that.getPhoneNum.is_auth = 0;
-          if (res.ret == undefined) {
-            wx.showModal({
-              title: '提示',
-              content: '服务器错误',
-              showCancel: false
-            })
-          } else {
-            wx.showModal({
-              title: '提示',
-              content: res.msg,
-              showCancel: false
-            })
-          }
           if (fn) {
-            fn();
+            fn(res);
           }
         }
       },
@@ -354,53 +370,72 @@ App({
       }
     });
   },
+  //从缓存拿数据
+  getStorage_user_info_data: function (fn) {
+    var options;
+    wx.getStorage({
+      key: 'user_info_data',
+      success: function (res) {
+        console.log('缓存数据res=' + JSON.stringify(res));
+        options = res.data;
+        if (fn) {
+          fn(options);
+        }
+      },
+      fail: function () {//缓存中没有数据
+        options = {
+          user_id: that.user_info_data.user_id,
+          open_id: that.user_info_data.open_id,
+          union_id: that.user_info_data.union_id,
+          mobile: that.user_info_data.mobile,
+        };
+        if (fn) {
+          fn(options);
+        }
+      }
+    })
+  },
   //判断进入哪个页面
   initView: function (fn) {
     var that = this;
     console.log('进入初始化页面接口 url=' + JSON.stringify(that.server_api.init_view));
-    var options = {
-      user_id: that.user_info_data.user_id,
-      open_id: that.user_info_data.open_id,
-      union_id: that.user_info_data.union_id,
-      mobile: that.user_info_data.mobile,
-    };
-    console.log('进入初始化页面的接口，options=' + JSON.stringify(options));
-    wx.request({
-      method: "POST",
-      url: that.server_api.init_view,
-      data: options,
-      success: function (res) {
-        console.log('初始返回res=' + JSON.stringify(res));
-        if (res.data.ret == 0) {
-          res = res.data;
-          if (fn) {
-            fn(res);
-          }
-        } else {
-          if (res.ret == undefined) {
-            wx.showModal({
-              title: '提示',
-              content: '服务器错误',
-              showCancel: false
-            })
+    that.getStorage_user_info_data(function (options) {
+      console.log('初始化页面的接口，options=' + JSON.stringify(options));
+      wx.request({
+        method: "POST",
+        url: that.server_api.init_view,
+        data: options,
+        success: function (res) {
+          console.log('初始返回res=' + JSON.stringify(res.data));
+          if (res.data.ret == 0) {
+            res = res.data;
+            if (fn) {
+              fn(res);
+            }
           } else {
-            wx.showModal({
-              title: '提示',
-              content: res.msg,
-              showCancel: false
-            })
+            if (res.ret == undefined) {
+              wx.showModal({
+                title: '提示',
+                content: '服务器错误',
+                showCancel: false
+              })
+            } else {
+              wx.showModal({
+                title: '提示',
+                content: res.msg,
+                showCancel: false
+              })
+            }
           }
+        },
+        fail: function (res) {
+          console.log('初始化页面接口失败');
+          console.log(res);
         }
-      },
-      fail: function (res) {
-        console.log('初始化页面接口失败');
-        console.log(res);
-      }
+      });
     });
-
-    
-
   },
+
   //领卡的接口
   receiveCard: function (fn) {
     wx.showLoading({
@@ -441,7 +476,7 @@ App({
   //领卡的接口2
   receiveCard2: function (code, fn) {
     wx.showLoading({
-      title: '领取中', 
+      title: '领取中',
     })
     var that = this;
     var options = {
@@ -462,7 +497,7 @@ App({
       url: that.server_api.receiveCard2,
       data: options,
       success: function (res) {
-        
+
         res = res.data;
         console.log('领卡返回res=' + JSON.stringify(res));
         if (res.ret == 0) {
@@ -495,7 +530,8 @@ App({
 
   //自定义toast  
   showToast: function (text, o, count) {
-    text = text.replace("\"", "").replace("\"", "").replace("\'", "").replace("\'", "");
+    text = String(text);
+    // text = text.replace("\"", "").replace("\"", "").replace("\'", "").replace("\'", "");
     var _this = o; count = parseInt(count) ? parseInt(count) : 3000;
     _this.setData({ toastText: text, isShowToast: true, });
     setTimeout(function () {
