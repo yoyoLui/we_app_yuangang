@@ -19,11 +19,10 @@ Page({
 
   onLoad: function (options) {
     console.log('options=' + JSON.stringify(options));
-
     //开关
     //app.from_data.channel_no = 1;
     //options.from_source = 0;//活动
-    // options.from_source = 1;//活动2
+    //options.from_source = 1;//活动2
     var that = this;
     //有from_source进入活动，没有from_source进入首页
     if (undefined != options && undefined != options.from_source) {
@@ -31,9 +30,7 @@ Page({
       that.data.is_index = false;
       app.is_index = false;
 
-      wx.showLoading({
-        title: '加载中'
-      })
+
       if (options.from_source == 0) {
         that.data.is_activity = true;
         // 页面初始化 options为页面跳转所带来的参数
@@ -167,7 +164,6 @@ Page({
                   iv: user_info_data.iv
                 },
                 success: function (res) {
-                  debugger;
                   res = res.data;
                   app.app_data = res.data;
 
@@ -224,10 +220,11 @@ Page({
     });
 
   },
- 
+
   //进入活动
   toActivity_card: function () {
     console.log('有进入活动事件toActivity');
+
     var that = this;
     //获取登录信息
     wx.login({
@@ -237,7 +234,7 @@ Page({
         app.check_login.hasLogin = true;
       }
     });
-   
+
 
     wx.getUserInfo({//首先跟微信拿user_info_data,然后decryptedData跟后端获取用户完整信息
       success: function (user_info_data) {
@@ -245,7 +242,7 @@ Page({
         app.check_login.hasGetUserInfo = true;
 
       },
-      fail:function(res){
+      fail: function (res) {
         wx.hideLoading();
         console.log('拒绝获取用户信息' + JSON.stringify(res));
         wx.showModal({
@@ -254,7 +251,7 @@ Page({
         })
 
       },
-      complete:function(res){
+      complete: function (res) {
       }
     })
 
@@ -271,6 +268,9 @@ Page({
 
   //初始化页面
   initController: function () {
+    wx.showLoading({
+      title: '加载中'
+    })
     console.log('有进入initController事件');
     var that = this;
     app.decryptedData(function () {
@@ -280,7 +280,8 @@ Page({
         app.toast.is_repeat = res.data.is_repeat;
         app.user_info_data.user_id = res.data.user_id;
         app.user_info_data._k = res.data._k;
-        // res.type =1;
+        app.toast.not_access = res.data.content;
+      
         //输入手机号页面
         if (res.type == 1) {
           app.toast.old_user_not_access_msg = res.msg;

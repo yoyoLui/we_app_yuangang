@@ -9,7 +9,7 @@
         <input bindinput="bindCodeInput" focus="{{code_focus}}" disabled="{{input_disabled}}" type="number" style="color: #000;" maxlength="6" placeholder-style="rgba(12,17,19,0.22);" placeholder="请输入验证码" />
         <text class="err">{{code_success}}</text>
       </view>
-      <button style="" form-type="submit" class="button {{button_disabled}}" disabled="{{button_disabled}}">{{button_text}}</button>
+      <button style="" form-type="submit" class="button {{button_disabled}}" hover-class="button-hover" disabled="{{button_disabled}}">{{button_text}}</button>
     </form>
   </view>
 </view>

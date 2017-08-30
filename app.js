@@ -1,5 +1,5 @@
-//var server = 'https://yifenshe.top';
-var server = 'https://dev.ejiayou.com';
+var server = 'https://yifenshe.top';
+//var server = 'https://dev.ejiayou.com';
 App({
   login_data: null,
   user_info_data: {
@@ -22,8 +22,8 @@ App({
     hasGetUserInfo: false
   },
   toast: {
-    old_user_not_access_msg: '',
-    is_repeat: 0
+    is_repeat: 0,
+    not_access:''
   },
   getPhoneNum: {
     is_auth: 0
@@ -164,7 +164,7 @@ App({
         }
       },
       fail: function (res) {
-        console.log('获取验证码失败');
+        console.log('验证码失败');
         console.log(res);
         wx.showModal({
           title: '提示',
@@ -217,7 +217,6 @@ App({
 
   //埋点
   defaultActivity: function (channel_no) {
-    debugger;
     var that = this;
     console.log('掉起埋点 channel_no is ' + channel_no + "," + that.server_api.defaultActivity);
     wx.request({
@@ -404,8 +403,10 @@ App({
   },
   //领卡的接口
   receiveCard: function (fn) {
+    wx.showLoading({
+      title: '领取中',
+    })
     var that = this;
-    debugger;
     var options = {
       user_id: that.user_info_data.user_id,
       open_id: that.user_info_data.open_id,
@@ -430,6 +431,7 @@ App({
 
       },
       fail: function (res) {
+        wx.hideLoading();
         console.log('领卡接口失败');
         console.log(res);
 
@@ -438,6 +440,9 @@ App({
   },
   //领卡的接口2
   receiveCard2: function (code, fn) {
+    wx.showLoading({
+      title: '领取中', 
+    })
     var that = this;
     var options = {
       user_id: that.user_info_data.user_id,
@@ -457,6 +462,7 @@ App({
       url: that.server_api.receiveCard2,
       data: options,
       success: function (res) {
+        
         res = res.data;
         console.log('领卡返回res=' + JSON.stringify(res));
         if (res.ret == 0) {
@@ -464,6 +470,7 @@ App({
             fn(res);
           }
         } else {
+          wx.hideLoading();
           if (res.ret == undefined) {
             wx.showModal({
               title: '提示',
@@ -488,7 +495,6 @@ App({
 
   //自定义toast  
   showToast: function (text, o, count) {
-    debugger;
     text = text.replace("\"", "").replace("\"", "").replace("\'", "").replace("\'", "");
     var _this = o; count = parseInt(count) ? parseInt(count) : 3000;
     _this.setData({ toastText: text, isShowToast: true, });

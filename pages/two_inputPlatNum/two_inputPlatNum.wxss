@@ -1,14 +1,21 @@
 /* pages/inputPlatNum/inputPlatNum.wxss */
+page{
+  height: 100%;
+  background-color: #F4F4F4;
+}
 .content{
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
 }
 .input_plate_number{
   display: block;
-  margin-left: 50rpx;
+  margin-left: 48rpx;
   margin-top: 100rpx;
-  font-size: 35rpx;
-  color: #000;
+  font-size: 32rpx;
+  color: #949494;
 }
 .input{
   display: flex;
@@ -28,4 +35,66 @@
   width: 100%;
   align-self: center;
   padding-left: 20rpx;
+}
+
+/* new layout */
+.plate_input{
+  display: flex;
+  height: 120rpx;
+  margin-top: 24rpx;
+}
+.plate_txt{
+  width: 120rpx;
+  height: 120rpx;
+  background: #FFFFFF;
+  border: 2rpx solid #E0E0E0;
+  border-radius: 8rpx;
+  margin-left: 48rpx;
+  margin-right: 8rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.plate_txt_input{
+  text-align: center;
+  font-size: 48rpx;
+  height: 100%;
+  color:  #0C1113;
+}
+
+.plate_num{
+  width: 526rpx;
+  height: 120rpx;
+  background: #FFFFFF;
+  border: 2rpx solid #E0E0E0;
+  border-radius: 8rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.plate_num_wrap{
+  margin-left: 44rpx;
+}
+.plate_num_input{
+  height: 100%;
+  font-size: 48rpx;
+  color:  #0C1113;
+}
+.collect_gifts_btn_2{
+  background:  #FB7511;
+  color: #FFFFFF;
+  width: 654rpx;
+  height: 116rpx;
+  text-align: center;
+  font-size: 36rpx;
+  line-height: 116rpx;
+  margin-top: 104rpx;
+}
+.button-hover {
+  background-color: #F7B482;
+}
+/* 设置按钮的禁用状态 */
+button[disabled][type="default"], wx-button[disabled]:not([type]){
+  background-color: #F7B482;
+  color: #fff;
 }

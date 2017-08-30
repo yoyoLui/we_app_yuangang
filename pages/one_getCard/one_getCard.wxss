@@ -62,3 +62,7 @@ view.button_view, view.button_view button {
 view.button_view button {
   margin-top: 624rpx;
 }
+
+button.button-hover{
+ opacity: 0.8
+}

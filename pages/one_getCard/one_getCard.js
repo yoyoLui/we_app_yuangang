@@ -14,6 +14,7 @@ Page({
   onLoad: function () {
     wx.hideLoading();
     var that = this;
+   
     if (app.user_info_data.mobile == '' || app.user_info_data.mobile == undefined) {
       //授权
       that.setData({
@@ -24,30 +25,28 @@ Page({
         is_open_getPhoneNumber: false
       });
     }
-    if (app.user_info_data.is_new == 0) {//老用户使用普通button
+    if (app.user_info_data.is_new == 0) {//营运车使用普通button
       that.setData({
         is_open_getPhoneNumber: false
       });
     }
   },
-  //点击领取按钮-直接跳转
-  buttonClick: function (e) {
 
-    if (app.user_info_data.is_new == 0) {
+  //普通button
+  //点击form事件
+  buttonClick: function (e) {//有手机号
+    console.log('获取formId=' + e.detail.formId);
+    app.formData.formId = e.detail.formId;
+    //埋点
+    if (app.user_info_data.is_new == 0) { //营运车
+      app.defaultActivity('E8uTF9 ');
       wx.showModal({
         title: '提示',
-        content: app.toast.old_user_not_access_msg,
-        showCancel: false
-      })
+        content: app.toast.not_access,
+      });
       return;
-    } else {
-      wx.showLoading({
-        title: '领取中',
-      })
-      //埋点-点击领取人数
+    } else {                              //私家车
       app.defaultActivity('Jv8mGH');
-      console.log('获取formId=' + e.detail.formId);
-      app.formData.formId = e.detail.formId;
       //调用领取接口
       app.decryptedData(function () {
         app.receiveCard(function (res) {
@@ -56,6 +55,7 @@ Page({
               url: '../one_cardReceived/one_cardReceived',
             })
           } else {
+            wx.hideLoading();
             console.log('ret!=0 打印' + JSON.stringify(res));
             if (res.ret != undefined) {
               wx.showModal({
@@ -74,26 +74,31 @@ Page({
         });
       });
     }
-
+   
+   
   },
-  getFormId: function (e) {
-    if (app.user_info_data.is_new == 0) {
-      app.showToast('抱歉，您暂时无法参与此活动', this, 2000);
-      return;
-    } else {
 
-      console.log('获取formId=' + e.detail.formId);
-      app.formData.formId = e.detail.formId;
-      //埋点-点击领取人数
+  //授权butttn
+  //点击form提交事件
+  getFormId: function (e) {
+    //埋点
+    if (app.user_info_data.is_new == 0) { //营运车(不会出现)
+      app.defaultActivity('E8uTF9 ');
+    } else {                              //私家车
       app.defaultActivity('Jv8mGH');
     }
+    console.log('获取formId=' + e.detail.formId);
+    app.formData.formId = e.detail.formId;
+    //埋点-点击领取人数
+    app.defaultActivity('Jv8mGH');
 
   },
   //点击领取按钮——授权登录
-  getPhoneNumber: function (e) {
+  getPhoneNumber: function (e) {//没有手机号
     //埋点-弹出授权弹框
     app.defaultActivity('mo9Y3N');
     var that = this;
+
     if (e.detail.encryptedData && e.detail.iv) {//用户授权
       wx.showLoading({
         title: '授权中',
@@ -144,7 +149,6 @@ Page({
           console.log('重新登录失败');
         }
       });
-
     } else {//没有授权,用户需要手动登录
       //埋点-点击拒绝授权人数
       app.defaultActivity('cbQcE2');

@@ -28,7 +28,11 @@ Page({
     if (phoneNum != null && phoneNum.length == 11) {
       result = (/^1[3|4|7|5|8][0-9]\d{4,8}$/.test(phoneNum));
       console.log(result);
+    } else {
+      result = false;
     }
+    //检查按钮是否可被点击
+    checkBtnDisable();
   },
   collect: function () {
     if (phoneNum == null || !result) {
@@ -50,7 +54,6 @@ Page({
 function decodeEncrypt_data(mobile) {
   console.log('decodeEncrypt_data url=' + app.server_api_2.applet_activity);
   var mCode = wx.getStorageSync('code');
-  console.log("mCode:" + mCode + "plateNum:" + plateNum + "is_auth:0" + "mobile:" + mobile);
   wx.request({
     url: app.server_api_2.applet_activity,
     method: "GET",
@@ -83,15 +86,23 @@ function decodeEncrypt_data(mobile) {
     }
   })
 }
-
 function sendPush(mobile) {
   var txt = mobile + ":" + plateNum;
   wx.request({
-    method: "GET",
-    url: 'https://api.ejiayou.com/activity/api/app/push_msg/send?regIds=1104a897929ca8090f1&msgContent=' + txt + '&contentType=ejiayou://stationList&url=&msgType=2&type=2&carNum=&isVip=1',
+    method: "POST",
+    url: 'https://dev.ejiayou.com/activity/api/app/push_msg/send',
+    data: {
+      regIds: '100d8559097df1ac5e9',
+      msgContent: txt,
+      contentType: 'ejiayou://stationList',
+      msgType: '2',
+      type: '2',
+      carNum: '',
+      isVip: '1'
+    },
     success: function (res) {
       console.log(res)
-      wx.redirectTo({
+      wx.reLaunch({
         url: '../two_success/two_success',
       })
     },

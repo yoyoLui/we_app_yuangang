@@ -9,9 +9,11 @@
   </view>
 
   <view class="button_view" style="width:100%;height:100%;">
+    <!-- 授权button -->
     <form wx:if="{{is_open_getPhoneNumber}}" bindsubmit="getFormId" report-submit='true'>
-      <button form-type="submit" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber" class="one_button">点击领取 </button>
+      <button form-type="submit" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber" class="one_button" hover-class="button-hover">点击领取 </button>
     </form>
+    <!-- 普通button -->
     <form wx:else bindsubmit="buttonClick" report-submit='true'>
       <button form-type="submit" class="one_button">点击领取</button>
     </form>

@@ -1,25 +1,30 @@
 /* pages/success/success.wxss */
+page{
+  height: 100%;
+}
 .content{
- flex: 1;
   display: flex;
-  position: absolute;
   height: 100%;
   width: 100%;
+  flex-direction: column;
   align-items: center;
-  background-size: cover
+}
+.bg-view-image{
+  width:100% ;
+  height:100% ;
+  position:absolute ;
+  z-index:1 ;
+  left:0 ;
+  right:0 ;
+  top:0 ;
+  bottom:0 ;
+}
+.gift_wrap{
+  z-index: 99;
+  margin-top: 146rpx;
 }
 .gift_image{
-  position: absolute;
-  left: 120rpx;
-  top: 200rpx;
-  width: 64px;
-  height: 64px;
-}
-.success_text{
-  position: absolute;
-  left: 160rpx;
-  top: 380rpx;
-  font-size: 40rpx;
-  font-weight: bold;
+  width: 560rpx;
+  height: 368rpx;
 }
 

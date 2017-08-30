@@ -75,7 +75,9 @@ button[disabled][type="default"], wx-button[disabled]:not([type]) {
 .button::after {
   border: 0px solid white;
 }
-
+button.button-hover{
+ opacity: 0.8
+}
 .login-info {
   padding: 12px 25px 0 25px;
 }
