@@ -14,13 +14,19 @@ Page({
   onLoad: function () {
     wx.hideLoading();
     var that = this;
+    console.log('mobile=' + app.user_info_data.mobile);
+    console.log('is_new=' + app.user_info_data.is_new);
+    if (app.user_info_data.mobile == '' || app.user_info_data.mobile == undefined) {
+      if (app.user_info_data.is_new == 1) {
+        console.log('授权按钮');
+        //授权按钮
+        that.setData({
+          is_open_getPhoneNumber: true
+        });
+      }
 
-    if (app.user_info_data.mobile == '' && app.user_info_data.is_new == 1) {
-      //授权按钮
-      that.setData({
-        is_open_getPhoneNumber: true
-      });
     } else {
+      console.log('普通按钮');
       that.setData({
         is_open_getPhoneNumber: false
       });
@@ -31,11 +37,24 @@ Page({
     //   });
     // }
   },
+  /**
+   * 页面相关事件处理函数--监听用户下拉动作
+   */
+  onPullDownRefresh: function () {
+    wx.showNavigationBarLoading() //在标题栏中显示加载
+    //模拟加载
+    setTimeout(function () {
+      // complete
+      wx.hideNavigationBarLoading() //完成停止加载
+      wx.stopPullDownRefresh() //停止下拉刷新
+    }, 1500);
+    this.onLoad();
 
+  },
   //普通button
   //点击form事件
   buttonClick: function (e) {//普通按钮
-    console.log('获取formId=' + e.detail.formId);
+    console.log('普通button获取formId=' + e.detail.formId);
     app.formData.formId = e.detail.formId;
     if (app.user_info_data.is_new == 0) { //营运车
       //埋点
@@ -88,7 +107,7 @@ Page({
     //埋点-弹出授权弹框
     app.defaultActivity('mo9Y3N');
     debugger;
-    console.log('获取formId=' + e.detail.formId);
+    console.log('授权button获取formId=' + e.detail.formId);
     app.formData.formId = e.detail.formId;
   },
   //点击领取按钮——授权登录
@@ -117,6 +136,7 @@ Page({
                     url: '../one_cardReceived/one_cardReceived',
                   })
                 } else {
+                  wx.hideLoading();
                   if (res.ret != undefined) {
                     wx.showModal({
                       title: '提示',
@@ -134,7 +154,7 @@ Page({
               });
             } else {//解密失败
               if (res_getMobile.ret != 0) {
-                app.showToast(res_getMobile.msg,this,2000);
+                app.showToast(res_getMobile.msg, this, 2000);
               }
               wx.redirectTo({
                 url: '../one_phoneInput/one_phoneInput',
@@ -167,7 +187,20 @@ Page({
    */
   onShow: function () {
     //隐藏转发按钮
-    wx.hideShareMenu()
+    wx.hideShareMenu();
+    wx.hideNavigationBarLoading();
+    // var that = this;
+    // if (app.user_info_data.mobile == '' && app.user_info_data.is_new == 1) {
+    //   console.log('授权按钮');
+    //   //授权按钮
+    //   that.setData({
+    //     is_open_getPhoneNumber: true
+    //   });
+    // } else {
+    //   that.setData({
+    //     is_open_getPhoneNumber: false
+    //   });
+    // }
   },
 
   /**
@@ -185,18 +218,13 @@ Page({
   },
 
   /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
+ * 页面上拉触底事件的处理函数
+ */
   onReachBottom: function () {
 
   },
+
+
 
   /**
    * 用户点击右上角分享

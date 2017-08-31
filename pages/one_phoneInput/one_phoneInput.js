@@ -19,20 +19,7 @@ Page({
     input_disabled: '',//可输入手机号,验证码,
     code_focus: false,
   },
-  onReachBottom: function () {
 
-  },
-  onPullDownRefresh: function () {
-    wx.showNavigationBarLoading() //在标题栏中显示加载
-    //模拟加载
-    setTimeout(function () {
-      // complete
-      wx.hideNavigationBarLoading() //完成停止加载
-      wx.stopPullDownRefresh() //停止下拉刷新
-    }, 1500);
-    this.onLoad();
-
-  },
   onShow: function () {
     wx.hideLoading();
     wx.hideNavigationBarLoading();
@@ -179,7 +166,22 @@ Page({
 
 
 
-  }
+  },
+  onPullDownRefresh: function () {
+    wx.showNavigationBarLoading() //在标题栏中显示加载
+    //模拟加载
+    setTimeout(function () {
+      // complete
+      wx.hideNavigationBarLoading() //完成停止加载
+      wx.stopPullDownRefresh() //停止下拉刷新
+    }, 1500);
+    this.onLoad();
+
+  },
+  onReachBottom: function () {
+
+  },
+
 })
 
 

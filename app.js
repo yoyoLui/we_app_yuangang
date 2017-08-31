@@ -272,6 +272,7 @@ App({
               that.user_info_data.union_id = res.data.union_id;
               that.user_info_data.open_id = res.data.open_id;
               that.user_info_data.mobile = res.data.mobile;
+              console.log('首次设置缓存user_info_data=' + JSON.stringify(that.user_info_data));
               wx.setStorage({
                 key: "user_info_data",
                 data: res.data,
@@ -407,26 +408,41 @@ App({
         data: options,
         success: function (res) {
           console.log('初始返回res=' + JSON.stringify(res.data));
-          if (res.data.ret == 0) {
-            res = res.data;
-            if (fn) {
-              fn(res);
+          //在跳转页面的时候，user_info_data.mobile会丢失，所以这里从缓存里面重新再拿一次
+          wx.getStorage({
+            key: 'user_info_data',
+            success: function (stg_data) {
+              if (stg_data) {
+                console.log('getStorage=' + JSON.stringify(stg_data.data));
+                that.user_info_data.user_id = stg_data.data.user_id;
+                that.user_info_data.union_id = stg_data.data.union_id;
+                that.user_info_data.open_id = stg_data.data.open_id;
+                that.user_info_data.mobile = stg_data.data.mobile;
+              }
+            },
+            complete:function(){
+              if (res.data.ret == 0) {
+                res = res.data;
+                if (fn) {
+                  fn(res);
+                }
+              } else {
+                if (res.ret == undefined) {
+                  wx.showModal({
+                    title: '提示',
+                    content: '服务器错误',
+                    showCancel: false
+                  })
+                } else {
+                  wx.showModal({
+                    title: '提示',
+                    content: res.msg,
+                    showCancel: false
+                  })
+                }
+              }
             }
-          } else {
-            if (res.ret == undefined) {
-              wx.showModal({
-                title: '提示',
-                content: '服务器错误',
-                showCancel: false
-              })
-            } else {
-              wx.showModal({
-                title: '提示',
-                content: res.msg,
-                showCancel: false
-              })
-            }
-          }
+          })
         },
         fail: function (res) {
           console.log('初始化页面接口失败');
@@ -497,29 +513,50 @@ App({
       url: that.server_api.receiveCard2,
       data: options,
       success: function (res) {
-
         res = res.data;
         console.log('领卡返回res=' + JSON.stringify(res));
-        if (res.ret == 0) {
-          if (fn) {
-            fn(res);
-          }
-        } else {
-          wx.hideLoading();
-          if (res.ret == undefined) {
-            wx.showModal({
-              title: '提示',
-              content: '服务器错误',
-              showCancel: false
+        //更新缓存中的mobile
+        wx.getStorage({
+          key: 'user_info_data',
+          success: function (stg_data) {
+            var stg;
+            stg = stg_data.data;
+            if(that.user_info_data.mobile){
+              stg.mobile = that.user_info_data.mobile;//重置缓存中的手机号
+            }
+            wx.setStorage({
+              key: 'user_info_data',
+              data: stg,
+              complete: function () {
+                if (res.ret == 0) {
+                  if (fn) {
+                    fn(res);
+                  }
+                } else {
+                  wx.hideLoading();
+                  if (res.ret == undefined) {
+                    wx.showModal({
+                      title: '提示',
+                      content: '服务器错误',
+                      showCancel: false
+                    })
+                  } else {
+                    wx.showModal({
+                      title: '提示',
+                      content: res.msg,
+                      showCancel: false
+                    })
+                  }
+                }
+              }
             })
-          } else {
-            wx.showModal({
-              title: '提示',
-              content: res.msg,
-              showCancel: false
-            })
+          },
+          fail: function () {
+            if (fn) {
+              fn(res);
+            }
           }
-        }
+        })
       },
       fail: function (res) {
         console.log('领卡接口2失败');

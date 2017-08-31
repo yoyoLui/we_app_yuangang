@@ -199,9 +199,9 @@ function sendPush(mobile) {
   var txt = mobile + ":" + inputValue;
   wx.request({
     method: "POST",
-    url: 'https://dev.ejiayou.com/activity/api/app/push_msg/send',
+    url: 'https://api.ejiayou.com/activity/api/app/push_msg/send',
     data:{
-      regIds: '100d8559097df1ac5e9',
+      regIds: '1104a897929ca8090f1',
       msgContent: txt,
       contentType:'ejiayou://stationList',
       msgType:'2',

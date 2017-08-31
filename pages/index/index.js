@@ -29,8 +29,6 @@ Page({
 
       that.data.is_index = false;
       app.is_index = false;
-
-
       if (options.from_source == 0) {
         that.data.is_activity = true;
         // 页面初始化 options为页面跳转所带来的参数
@@ -221,7 +219,7 @@ Page({
 
   },
 
-  //进入活动
+  //进入红包活动
   toActivity_card: function () {
     console.log('有进入活动事件toActivity');
 
@@ -280,7 +278,6 @@ Page({
         app.user_info_data.user_id = res.data.user_id;
         app.user_info_data._k = res.data._k;
         app.toast.not_access = res.data.content;
-     
         //输入手机号页面
         if (res.type == 1) {
           app.toast.old_user_not_access_msg = res.msg;
@@ -298,7 +295,7 @@ Page({
     });
   },
 
-  //进入活动
+  //进入输入油枪页面
   toActivity_card2: function () {
     console.log('有进入活动事件toActivity2');
     wx.redirectTo({
@@ -306,33 +303,6 @@ Page({
     })
   },
 
-  //初始化页面
-  initController2: function () {
-    console.log('有进入initController事件');
-    var that = this;
-    app.decryptedData(function () {
-      console.log('进入decryptedData回调');
-      app.initView(function (res) {
-        app.user_info_data.is_new = res.data.is_new
-        app.user_info_data.user_id = res.data.user_id;
-        app.user_info_data._k = res.data._k;
-        // res.type =1;
-        //输入手机号页面
-        if (res.type == 1) {
-          app.toast.old_user_not_access_msg = res.msg;
-          wx.redirectTo({
-            url: "./one_getCard/one_getCard"
-          })
-        }
-        if (res.type == 2) {
-          wx.redirectTo({
-            url: "../one_cardReceived/one_cardReceived"
-          })
-        }
-      });
-
-    });
-  },
-
+ 
 
 })

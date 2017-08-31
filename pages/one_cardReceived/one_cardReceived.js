@@ -8,6 +8,10 @@ Page({
   data: {
     isSuccess_notRepeat: true,
   },
+ 
+  /**
+   * 页面相关事件处理函数--监听用户下拉动作
+   */
 
   /**
    * 生命周期函数--监听页面加载
@@ -27,7 +31,17 @@ Page({
     };
  
   },
+  onPullDownRefresh: function () {
+    wx.showNavigationBarLoading() //在标题栏中显示加载
+    //模拟加载
+    setTimeout(function () {
+      // complete
+      wx.hideNavigationBarLoading() //完成停止加载
+      wx.stopPullDownRefresh() //停止下拉刷新
+    }, 1500);
+    this.onLoad();
 
+  },
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
@@ -42,6 +56,7 @@ Page({
     //隐藏转发按钮
     wx.hideShareMenu()
     wx.hideLoading();
+    wx.hideNavigationBarLoading();
   },
 
   /**
@@ -59,18 +74,13 @@ Page({
   },
 
   /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
+  * 页面上拉触底事件的处理函数
+  */
   onReachBottom: function () {
 
   },
+
+
 
   /**
    * 用户点击右上角分享
