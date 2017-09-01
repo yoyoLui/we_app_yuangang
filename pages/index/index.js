@@ -1,6 +1,6 @@
-// pages/new_index/new_index.js
 var app = getApp();
-var app2;
+var utilPlugins = require('../../utils/utilPlugins');
+var weApi = require('../../utils/weApi');
 Page({
   data: {
     is_index: false,
@@ -218,7 +218,16 @@ Page({
     });
 
   },
+  loopOpenSetting: function (fn) {
+    weApi.openSettingSuccess(function (isSuccessOpen) {
+      if (isSuccessOpen) {
+        fn();
+      } else {
 
+      }
+
+    });
+  },
   //进入红包活动
   toActivity_card: function () {
     console.log('有进入活动事件toActivity');
@@ -242,14 +251,14 @@ Page({
       },
       fail: function (res) {
         wx.hideLoading();
-        console.log('拒绝获取用户信息' + JSON.stringify(res));
-        wx.showModal({
-          title: '提示',
-          content: '请前往发现-小程序中删除本小程序，再进行操作',
-        })
-
-      },
-      complete: function (res) {
+        weApi.openSettingSuccess(function () {
+          wx.getUserInfo({//首先跟微信拿user_info_data,然后decryptedData跟后端获取用户完整信息
+            success: function (user_info_data) {
+              app.user_info_data = user_info_data;
+              app.check_login.hasGetUserInfo = true;
+            },
+          });
+        });
       }
     })
 
@@ -259,7 +268,6 @@ Page({
         clearInterval(_timer);
         console.log('进入initController条件成功');
         that.initController();
-
       }
     }, 10);
   },
@@ -303,6 +311,6 @@ Page({
     })
   },
 
- 
+
 
 })

@@ -1,45 +1,39 @@
+var utilPlugins = require('../../utils/utilPlugins.js')
 var app = getApp();
 Page({
-
-  /**
-   * 页面的初始数据
-   */
   data: {
-    is_open_getPhoneNumber: true,//默认显示授权按钮
+    is_open_getPhoneNumber: false,//默认显示普通按钮
   },
-
-  /**
-   * 生命周期函数--监听页面加载
-   */
   onLoad: function () {
     wx.hideLoading();
     var that = this;
     console.log('mobile=' + app.user_info_data.mobile);
     console.log('is_new=' + app.user_info_data.is_new);
-    if (app.user_info_data.mobile == '' || app.user_info_data.mobile == undefined) {
-      if (app.user_info_data.is_new == 1) {
-        console.log('授权按钮');
-        //授权按钮
-        that.setData({
-          is_open_getPhoneNumber: true
-        });
-      }
 
+    if (that.canShowGetPhoneButton()) {
+      console.log('授权按钮');
+      //授权按钮
+      that.setData({
+        is_open_getPhoneNumber: true
+      });
     } else {
       console.log('普通按钮');
       that.setData({
         is_open_getPhoneNumber: false
       });
     }
-    // if (app.user_info_data.is_new == 0) {//营运车不参与活动，走普通button
-    //   that.setData({
-    //     is_open_getPhoneNumber: false
-    //   });
-    // }
   },
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
+  //判断使用什么button
+  canShowGetPhoneButton: function () {
+    //bindgetphonenumber 从1.2.0 开始支持，但是在1.5.3以下版本中无法使用wx.canIUse进行检测，建议使用基础库版本进行判断。
+    if (!app.util.compareVersion('1.2.0',app.SystemInfo.SDKVersion)&& app.user_info_data.is_new == 1) {
+      debugger;
+      if (app.user_info_data.mobile == '' || app.user_info_data.mobile == undefined) {
+        return true;
+      }
+    }
+    return false;
+  },
   onPullDownRefresh: function () {
     wx.showNavigationBarLoading() //在标题栏中显示加载
     //模拟加载
@@ -51,7 +45,8 @@ Page({
     this.onLoad();
 
   },
-  //普通button
+
+  //普通button-直接领取
   //点击form事件
   buttonClick: function (e) {//普通按钮
     console.log('普通button获取formId=' + e.detail.formId);
@@ -59,40 +54,33 @@ Page({
     if (app.user_info_data.is_new == 0) { //营运车
       //埋点
       app.defaultActivity('E8uTF9 ');
-      app.showToast(app.toast.not_access, this, 2000);
+      utilPlugins.showToast(app.toast.not_access, this, 2000);
       return;
     } else {                              //私家车
       //埋点
       app.defaultActivity('Jv8mGH');
       //调用领取接口
       app.decryptedData(function () {
-        app.receiveCard(function (res) {
-          if (res.ret == 0) {//新用户并且成功领取
-            wx.redirectTo({
-              url: '../one_cardReceived/one_cardReceived',
-            })
-          } else {
-            wx.hideLoading();
-            console.log('ret!=0 打印' + JSON.stringify(res));
-            if (res.ret != undefined) {
-              wx.showModal({
-                title: '提示',
-                content: res.msg,
-                showCancel: false
+        if (app.user_info_data.mobile ) {//有手机号才可以调用领卡接口
+          app.receiveCard(function (res) {
+            if (res.ret == 0) {//新用户并且成功领取
+              wx.redirectTo({
+                url: '../one_cardReceived/one_cardReceived',
               })
             } else {
-              wx.showModal({
-                title: '提示',
-                content: '服务器错误',
-                showCancel: false
-              })
+              wx.hideLoading();
+              utilPlugins.showErrorMsg(res);
             }
-          }
-        });
+          });
+        } else {
+          wx.redirectTo({//可能由于版本过低，导致不能弹出授权弹框，所以这里跳转到输入手机号页面
+            url: '../one_phoneInput/one_phoneInput',
+          })
+        }
       });
+
+
     }
-
-
   },
 
   //授权butttn
@@ -137,24 +125,12 @@ Page({
                   })
                 } else {
                   wx.hideLoading();
-                  if (res.ret != undefined) {
-                    wx.showModal({
-                      title: '提示',
-                      content: res.msg,
-                      showCancel: false
-                    })
-                  } else {
-                    wx.showModal({
-                      title: '提示',
-                      content: '服务器错误',
-                      showCancel: false
-                    })
-                  }
+                  utilPlugins.showErrorMsg(res);
                 }
               });
             } else {//解密失败
               if (res_getMobile.ret != 0) {
-                app.showToast(res_getMobile.msg, this, 2000);
+                utilPlugins.showToast(res_getMobile.msg, this, 2000);
               }
               wx.redirectTo({
                 url: '../one_phoneInput/one_phoneInput',
@@ -175,61 +151,21 @@ Page({
     }
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
   onReady: function () {
     wx.hideLoading();
   },
 
-  /**
-   * 生命周期函数--监听页面显示
-   */
   onShow: function () {
     //隐藏转发按钮
     wx.hideShareMenu();
     wx.hideNavigationBarLoading();
-    // var that = this;
-    // if (app.user_info_data.mobile == '' && app.user_info_data.is_new == 1) {
-    //   console.log('授权按钮');
-    //   //授权按钮
-    //   that.setData({
-    //     is_open_getPhoneNumber: true
-    //   });
-    // } else {
-    //   that.setData({
-    //     is_open_getPhoneNumber: false
-    //   });
-    // }
   },
 
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
+  onHide: function () { },
 
-  },
+  onUnload: function () { },
 
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
+  onReachBottom: function () { },
 
-  },
-
-  /**
- * 页面上拉触底事件的处理函数
- */
-  onReachBottom: function () {
-
-  },
-
-
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {
-
-  }
+  onShareAppMessage: function () { }
 })

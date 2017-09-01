@@ -1,20 +1,20 @@
-var server = 'https://yifenshe.top';
-//var server = 'https://dev.ejiayou.com';
+//var server = 'https://yifenshe.top';
+var server = 'https://dev.ejiayou.com';
 App({
   login_data: null,
   user_info_data: {
-    city_id: 0,
-    is_show: 0,
-    is_repeat: 0
+    // city_id: 0,
+    // is_show: 0,
+    // is_repeat: 0
   },
   from_data: {
-    from_user_id: 0,
-    from_city_id: 0,
+    // from_user_id: 0,
+    // from_city_id: 0,
     from_source: -1,
-    channel_no: ''
+    // channel_no: ''
   },
   group_data: {
-    open_gid: '',
+    // open_gid: '',
   },
   check_login: {
     hasLogin: false,
@@ -31,19 +31,32 @@ App({
   formData: {
     formId: ''
   },
-  server: server,
+  SystemInfo: {},
+  // server: server,
   onLaunch: function (option) {
+    try {
+      this.SystemInfo = wx.getSystemInfoSync()
+      console.log(JSON.stringify(this.SystemInfo));
+      //如果为6.5.2，return false
+      if (this.util.compareVersion('6.5.2', this.SystemInfo.version)) {
+        debugger;
+        wx.showModal({
+          title: '提示',
+          content: '微信版本过低，请更新微信版本',
+          showCancel: false
+        })
+        return;
+      }
+    } catch (e) {
+      // Do something when catch error
+    }
     var that = this;
     wx.showLoading({
       title: '加载中',
     })
     console.log('onlaunch option is ' + JSON.stringify(option));
 
-    if (option && option.shareTicket) {
-      that.group_data.share_ticket = option.shareTicket;
-      console.log('option is ' + JSON.stringify(option));
-      console.log('that.group_data.share_ticket is ' + JSON.stringify(that.group_data.share_ticket));
-    }
+
 
   },
   onShow: function () { },
@@ -96,6 +109,46 @@ App({
         }
       }
       return false;
+    },
+    //提示异常信息
+    showErrorMsg: function (res) {
+      wx.hideLoading();
+      if (res.ret == undefined) {
+        wx.showModal({
+          title: '提示',
+          content: '服务器错误',
+          showCancel: false
+        })
+      } else {
+        wx.showModal({
+          title: '提示',
+          content: res.msg,
+          showCancel: false
+        })
+      }
+    },
+
+    //比较版本
+    compareVersion: function (curV, reqV) {
+      if (curV && reqV) {
+        //将两个版本号拆成数字  
+        var arr1 = curV.split('.'),
+          arr2 = reqV.split('.');
+        var minLength = Math.min(arr1.length, arr2.length),
+          position = 0,
+          diff = 0;
+        //依次比较版本号每一位大小，当对比得出结果后跳出循环（后文有简单介绍）  
+        while (position < minLength && ((diff = parseInt(arr1[position]) - parseInt(arr2[position])) == 0)) {
+          position++;
+        }
+        diff = (diff != 0) ? diff : (arr1.length - arr2.length);
+        //若curV大于reqV，则返回true  
+        return diff > 0;
+      } else {
+        //输入为空  
+        console.log("版本号不能为空");
+        return false;
+      }
     }
   },
   //检查登录code是否过期
@@ -112,7 +165,6 @@ App({
         //登录态过期
         wx.login({
           success: function (login_data) {
-
             that.login_data.code = login_data.code;
             if (fn) {
               fn();
@@ -143,21 +195,8 @@ App({
             icon: 'success',
             duration: 1000
           })
-
         } else {
-          if (res.ret == undefined) {
-            wx.showModal({
-              title: '提示',
-              content: '服务器错误',
-              showCancel: false
-            })
-          } else {
-            wx.showModal({
-              title: '提示',
-              content: res.msg,
-              showCancel: false
-            })
-          }
+          that.util.showErrorMsg(res);
         }
         if (fn) {
           fn(res)
@@ -201,7 +240,6 @@ App({
         if (res.ret != 0) {
           wx.showToast({
             title: "验证码错误",
-            //icon: 'success',
             image: '',
             duration: 1000
           })
@@ -255,6 +293,7 @@ App({
         }
       },
       fail: function (failRes) {
+        //首次进入请求数据
         wx.request({
           method: "POST",
           url: that.server_api.get_user_info,
@@ -272,31 +311,18 @@ App({
               that.user_info_data.union_id = res.data.union_id;
               that.user_info_data.open_id = res.data.open_id;
               that.user_info_data.mobile = res.data.mobile;
-              console.log('首次设置缓存user_info_data=' + JSON.stringify(that.user_info_data));
               wx.setStorage({
                 key: "user_info_data",
                 data: res.data,
-                complete:function(){
+                complete: function () {
                   if (fn) {
                     fn();
                   }
                 }
               })
-           
+
             } else {
-              if (res.ret == undefined) {
-                wx.showModal({
-                  title: '提示',
-                  content: '服务器错误',
-                  showCancel: false
-                })
-              } else {
-                wx.showModal({
-                  title: '提示',
-                  content: res.msg,
-                  showCancel: false
-                })
-              }
+              that.util.showErrorMsg(res);
             }
           },
           fail: function (res) {
@@ -332,23 +358,21 @@ App({
             success: function (stg_data) {
               var stg;
               stg = stg_data.data;
-              if (res.data.user_id) {
-                stg.user_id = res.data.user_id;
-              }
+              debugger;
               if (res.data.mobile) {
                 stg.mobile = res.data.mobile;
               }
               wx.setStorage({
                 key: 'user_info_data',
                 data: stg,
-                complete:function(){
+                complete: function () {
                   if (fn) {
                     fn(res);
                   }
                 }
               })
             },
-            fail:function(){
+            fail: function () {
               if (fn) {
                 fn(res);
               }
@@ -377,7 +401,6 @@ App({
     wx.getStorage({
       key: 'user_info_data',
       success: function (res) {
-        console.log('缓存数据res=' + JSON.stringify(res));
         options = res.data;
         if (fn) {
           fn(options);
@@ -408,6 +431,7 @@ App({
         data: options,
         success: function (res) {
           console.log('初始返回res=' + JSON.stringify(res.data));
+          res = res.data;
           //在跳转页面的时候，user_info_data.mobile会丢失，所以这里从缓存里面重新再拿一次
           wx.getStorage({
             key: 'user_info_data',
@@ -420,26 +444,13 @@ App({
                 that.user_info_data.mobile = stg_data.data.mobile;
               }
             },
-            complete:function(){
-              if (res.data.ret == 0) {
-                res = res.data;
+            complete: function () {
+              if (res.ret == 0) {
                 if (fn) {
                   fn(res);
                 }
               } else {
-                if (res.ret == undefined) {
-                  wx.showModal({
-                    title: '提示',
-                    content: '服务器错误',
-                    showCancel: false
-                  })
-                } else {
-                  wx.showModal({
-                    title: '提示',
-                    content: res.msg,
-                    showCancel: false
-                  })
-                }
+                that.util.showErrorMsg(res);
               }
             }
           })
@@ -521,7 +532,7 @@ App({
           success: function (stg_data) {
             var stg;
             stg = stg_data.data;
-            if(that.user_info_data.mobile){
+            if (that.user_info_data.mobile) {
               stg.mobile = that.user_info_data.mobile;//重置缓存中的手机号
             }
             wx.setStorage({
@@ -533,20 +544,8 @@ App({
                     fn(res);
                   }
                 } else {
-                  wx.hideLoading();
-                  if (res.ret == undefined) {
-                    wx.showModal({
-                      title: '提示',
-                      content: '服务器错误',
-                      showCancel: false
-                    })
-                  } else {
-                    wx.showModal({
-                      title: '提示',
-                      content: res.msg,
-                      showCancel: false
-                    })
-                  }
+                  that.util.showErrorMsg(res);
+
                 }
               }
             })

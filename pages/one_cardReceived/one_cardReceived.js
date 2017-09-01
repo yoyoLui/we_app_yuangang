@@ -8,7 +8,7 @@ Page({
   data: {
     isSuccess_notRepeat: true,
   },
- 
+
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
@@ -17,19 +17,20 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+
     var that = this;
     console.log('app.toast.is_repeat=' + JSON.stringify(app.toast.is_repeat));
-    if (app.toast.is_repeat  == 1) {//老用户
+    if (app.toast.is_repeat == 1) {//老用户
       that.setData({
         isSuccess_notRepeat: false
       });
     }
-    if (app.toast.is_repeat  == 0) {//新用户
+    if (app.toast.is_repeat == 0) {//新用户
       that.setData({
         isSuccess_notRepeat: true
       });
     };
- 
+    
   },
   onPullDownRefresh: function () {
     wx.showNavigationBarLoading() //在标题栏中显示加载
@@ -47,6 +48,8 @@ Page({
    */
   onReady: function () {
     
+    
+
   },
 
   /**
@@ -57,6 +60,7 @@ Page({
     wx.hideShareMenu()
     wx.hideLoading();
     wx.hideNavigationBarLoading();
+    
   },
 
   /**
