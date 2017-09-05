@@ -218,16 +218,7 @@ Page({
     });
 
   },
-  loopOpenSetting: function (fn) {
-    weApi.openSettingSuccess(function (isSuccessOpen) {
-      if (isSuccessOpen) {
-        fn();
-      } else {
 
-      }
-
-    });
-  },
   //进入红包活动
   toActivity_card: function () {
     console.log('有进入活动事件toActivity');
@@ -261,6 +252,7 @@ Page({
         });
       }
     })
+    
 
 
     var _timer = setInterval(function () {

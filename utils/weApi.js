@@ -14,9 +14,6 @@ function openSettingSuccess(fn) {
   }
 }
 function openSettingLoop(fun) {
-  wx.showToast({
-    title: '请允许授权',
-  })
   wx.openSetting({
     success: (res) => {
       if (res.authSetting['scope.userInfo']) {
@@ -24,7 +21,14 @@ function openSettingLoop(fun) {
         fun();
       } else {
         console.log('拒绝授权用户信息,重新打开设置页');
-        openSettingLoop(fun);
+        wx.showModal({
+          title: '',
+          content: '同意授权才可使用，元岗加油站不会将您的信息提供给第三方',
+          showCancel:false,
+          success:function(){
+            openSettingLoop(fun);
+          }
+        })
       }
     }
   })

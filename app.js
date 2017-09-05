@@ -1,5 +1,5 @@
-//var server = 'https://yifenshe.top';
-var server = 'https://dev.ejiayou.com';
+var server = 'https://yifenshe.top';
+//var server = 'https://dev.ejiayou.com';
 App({
   login_data: null,
   user_info_data: {
@@ -34,30 +34,29 @@ App({
   SystemInfo: {},
   // server: server,
   onLaunch: function (option) {
-    try {
-      this.SystemInfo = wx.getSystemInfoSync()
-      console.log(JSON.stringify(this.SystemInfo));
-      //如果为6.5.2，return false
-      if (this.util.compareVersion('6.5.2', this.SystemInfo.version)) {
-        debugger;
-        wx.showModal({
-          title: '提示',
-          content: '微信版本过低，请更新微信版本',
-          showCancel: false
-        })
-        return;
-      }
-    } catch (e) {
-      // Do something when catch error
-    }
+    console.log('onlaunch option is ' + JSON.stringify(option));
+
+    //
+    // try {
+    //   this.SystemInfo = wx.getSystemInfoSync()
+    //   console.log(JSON.stringify(this.SystemInfo));
+    //   //如果为6.5.2，return false
+    //   if (this.util.compareVersion('6.5.2', this.SystemInfo.version)) {
+    //     wx.showModal({
+    //       title: '提示',
+    //       content: '微信版本过低，请更新微信版本',
+    //       showCancel: false
+    //     })
+    //     return;
+    //   }
+    // } catch (e) {
+    //   // Do something when catch error
+    // }
     var that = this;
+    that.SystemInfo = wx.getSystemInfoSync();
     wx.showLoading({
       title: '加载中',
     })
-    console.log('onlaunch option is ' + JSON.stringify(option));
-
-
-
   },
   onShow: function () { },
   onHide: function () { },
@@ -358,7 +357,6 @@ App({
             success: function (stg_data) {
               var stg;
               stg = stg_data.data;
-              debugger;
               if (res.data.mobile) {
                 stg.mobile = res.data.mobile;
               }
@@ -496,7 +494,9 @@ App({
         wx.hideLoading();
         console.log('领卡接口失败');
         console.log(res);
-
+        if (fn) {
+          fn(res);
+        }
       }
     });
   },

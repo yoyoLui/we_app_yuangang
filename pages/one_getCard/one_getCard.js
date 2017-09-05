@@ -27,7 +27,6 @@ Page({
   canShowGetPhoneButton: function () {
     //bindgetphonenumber 从1.2.0 开始支持，但是在1.5.3以下版本中无法使用wx.canIUse进行检测，建议使用基础库版本进行判断。
     if (!app.util.compareVersion('1.2.0',app.SystemInfo.SDKVersion)&& app.user_info_data.is_new == 1) {
-      debugger;
       if (app.user_info_data.mobile == '' || app.user_info_data.mobile == undefined) {
         return true;
       }
@@ -43,7 +42,6 @@ Page({
       wx.stopPullDownRefresh() //停止下拉刷新
     }, 1500);
     this.onLoad();
-
   },
 
   //普通button-直接领取
@@ -94,13 +92,11 @@ Page({
     }
     //埋点-弹出授权弹框
     app.defaultActivity('mo9Y3N');
-    debugger;
     console.log('授权button获取formId=' + e.detail.formId);
     app.formData.formId = e.detail.formId;
   },
   //点击领取按钮——授权登录
   getPhoneNumber: function (e) {//没有手机号
-    debugger;
     var that = this;
     if (e.detail.encryptedData && e.detail.iv) {//用户授权
       wx.showLoading({
@@ -123,9 +119,12 @@ Page({
                   wx.redirectTo({
                     url: '../one_cardReceived/one_cardReceived',
                   })
-                } else {
+                } else {//可能fail，也可能是success返回ret！=0
                   wx.hideLoading();
                   utilPlugins.showErrorMsg(res);
+                  wx.redirectTo({
+                    url: '../one_phoneInput/one_phoneInput',
+                  })
                 }
               });
             } else {//解密失败
