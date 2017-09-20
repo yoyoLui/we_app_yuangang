@@ -13,19 +13,19 @@ view.bg_view {
   bottom:0 ;
 }
 .image_success {
-  width: 500rpx;
-  height: 552rpx;
   position: absolute;
   z-index: 99;
-  margin-top: 200rpx;
-  margin-left: -250rpx;
+  left:0;
+  right:0;
+  margin:auto;
+  top:100rpx;
 }
 
 .image_repeat {
-  width: 578rpx;
-  height: 552rpx;
-  position: absolute;
-  z-index: 99;
-  margin-top: 200rpx;
-  margin-left: -289rpx;
+  position:absolute;
+  z-index:99;
+  left:0;
+  right:0;
+  margin:auto;
+  top:372rpx;
 }

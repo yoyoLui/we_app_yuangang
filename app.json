@@ -5,9 +5,9 @@
     "pages/record/record",
     "pages/upload/upload",
 
-    "pages/one_cardReceived/one_cardReceived",
     "pages/one_getCard/one_getCard",
     "pages/one_phoneInput/one_phoneInput",
+    "pages/one_cardReceived/one_cardReceived",
 
     "pages/two_inputPlatNum/two_inputPlatNum",
     "pages/two_inputPhone/two_inputPhone",

@@ -1,5 +1,6 @@
 var server = 'https://yifenshe.top';
 //var server = 'https://dev.ejiayou.com';
+
 App({
   login_data: null,
   user_info_data: {
