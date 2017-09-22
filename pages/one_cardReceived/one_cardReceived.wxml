@@ -3,7 +3,7 @@
     <image src="https://img.ejiayou.com/experience_app_img/image_background.jpg" class="bg-view-image"></image>
   <!-- </view> -->
   <view style='width:100%;height:100%'>
-    <image wx:if="{{isSuccess_notRepeat}}" mode="widthFix" class="image_success" src="https://img.ejiayou.com/experience_app_img/image_success_20170919.png"></image>
+    <image wx:if="{{isSuccess_notRepeat}}" mode="widthFix" class="image_success" src="https://img.ejiayou.com/experience_app_img/image_success_20170922.png"></image>
     <image wx:else mode="widthFix" class="image_repeat" src="https://img.ejiayou.com/experience_app_img/image_repeat_default.png"></image>
   </view>
 </view>
