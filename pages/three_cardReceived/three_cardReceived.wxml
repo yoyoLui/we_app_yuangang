@@ -1,0 +1,9 @@
+<view class="container">
+  <!-- <view class="bg_view" style="width:100%;height:100%;"> -->
+    <image src="https://img.ejiayou.com/experience_app_img/background_3.jpg" class="bg-view-image"></image>
+  <!-- </view> -->
+  <view style='width:100%;height:100%'>
+    <image wx:if="{{isSuccess_notRepeat}}" mode="widthFix" class="image_success" src="https://img.ejiayou.com/experience_app_img/pic_redpacket_opened_3.png"></image>
+    <image wx:else mode="widthFix" class="image_repeat" src="https://img.ejiayou.com/experience_app_img/image_repeat_3.png"></image>
+  </view>
+</view>

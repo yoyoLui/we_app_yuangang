@@ -21,12 +21,12 @@ Page({
     console.log('options=' + JSON.stringify(options));
     //开关
     //app.from_data.channel_no = 1;
-    //options.from_source = 0;//活动
-    //options.from_source = 1;//活动2
+    //options.from_source = 0;//200元卡
+    //options.from_source = 1;//输入车牌号领取礼物
+    //options.from_source = 2;//客服小号
     var that = this;
     //有from_source进入活动，没有from_source进入首页
     if (undefined != options && undefined != options.from_source) {
-
       that.data.is_index = false;
       app.is_index = false;
       if (options.from_source == 0) {
@@ -62,6 +62,13 @@ Page({
         that.toActivity_card2();
         return;
       }
+      //客服小号
+      if (options.from_source == 2) {
+          app.from_data.from_source = options.from_source;
+        that.toActivity_customerService();
+        return;
+      }
+
     }
 
     //进入首页
@@ -302,7 +309,78 @@ Page({
       url: '../two_inputPlatNum/two_inputPlatNum',
     })
   },
+  //进入活动3
+  toActivity_customerService: function () {
+    console.log('有进入活动事件toActivity');
+    var that = this;
+    //获取登录信息
+    wx.login({
+      success: function (login_data) {
+        console.log('login is' + JSON.stringify(login_data));
+        app.login_data = login_data;
+        app.check_login.hasLogin = true;
+      }
+    });
 
+    wx.getUserInfo({//首先跟微信拿user_info_data,然后decryptedData跟后端获取用户完整信息
+      success: function (user_info_data) {
+        app.user_info_data = user_info_data;
+        app.check_login.hasGetUserInfo = true;
+      },
+      fail: function (res) {
+        wx.hideLoading();
+        weApi.openSettingSuccess(function () {
+          wx.getUserInfo({//首先跟微信拿user_info_data,然后decryptedData跟后端获取用户完整信息
+            success: function (user_info_data) {
+              app.user_info_data = user_info_data;
+              app.check_login.hasGetUserInfo = true;
+            },
+          });
+        });
+      }
+    })
+
+    var _timer = setInterval(function () {
+      if (app.check_login.hasLogin && app.check_login.hasGetUserInfo) {
+        clearInterval(_timer);
+        console.log('进入initController条件成功');
+        that.initController3();
+      }
+    }, 10);
+  },
+
+  //活动3初始化页面
+  initController3: function () {
+    wx.showLoading({
+      title: '加载中'
+    })
+    console.log('有进入initController事件');
+    var that = this;
+    app.decryptedData_3(function () {
+      app.initView_3(function (res) {
+        app.user_info_data.is_new = res.data.is_new;
+        app.toast.is_repeat = res.data.is_repeat;
+        app.user_info_data.user_id = res.data.user_id;
+        app.user_info_data._k = res.data._k;
+        app.toast.not_access = res.data.content;
+        //埋点-进入页面人数 zXtCFA 
+        app.defaultActivity_3('zXtCFA');
+        //输入手机号页面
+        if (res.type == 1) {
+          app.toast.old_user_not_access_msg = res.msg;
+          wx.redirectTo({
+            url: "../three_getCard/three_getCard"
+          })
+        }
+        if (res.type == 2) {
+          wx.redirectTo({
+            url: "../three_cardReceived/three_cardReceived"
+          })
+        }
+      });
+
+    });
+  },
 
 
 })

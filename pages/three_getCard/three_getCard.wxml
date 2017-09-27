@@ -1,0 +1,28 @@
+<!--activity_card.wxml-->
+<view class="container">
+  <view class="bg_view" style="width:100%;height:100%;">
+    <image src="https://img.ejiayou.com/experience_app_img/background_3.jpg" class="bg-view-image"></image>
+  </view>
+  <view class="card_view" style="width:100%;height:100%;">
+   
+    <image mode="widthFix" class="redpacket" src="https://img.ejiayou.com/experience_app_img/pic_redpacket_sealed_3.png"></image>
+  </view>
+
+  <view class="button_view" style="width:100%;height:100%;">
+    <!-- 授权button -->
+    <form wx:if="{{is_open_getPhoneNumber}}" bindsubmit="getFormId" report-submit='true'>
+      <button form-type="submit" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber" class="one_button" hover-class="button-hover">点击领取 </button>
+    </form>
+    <!-- 普通button -->
+    <form wx:else bindsubmit="buttonClick" report-submit='true'>
+      <button form-type="submit" class="one_button">点击领取</button>
+    </form>
+  </view>
+    <!--wxapp-toast start-->
+  <view class="wxapp-toast-content-box" wx:if="{{isShowToast}}">
+    <view class="wxapp-toast-content">
+      <view class="wxapp-toast-content-text"> {{toastText}} </view>
+    </view>
+  </view>
+  <!--wxapp-toast end-->
+</view>

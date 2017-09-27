@@ -11,7 +11,11 @@
 
     "pages/two_inputPlatNum/two_inputPlatNum",
     "pages/two_inputPhone/two_inputPhone",
-    "pages/two_success/two_success"
+    "pages/two_success/two_success",
+
+    "pages/three_getCard/three_getCard",
+    "pages/three_phoneInput/three_phoneInput",
+    "pages/three_cardReceived/three_cardReceived"
   ],
   "window": {
     "backgroundTextStyle": "light",

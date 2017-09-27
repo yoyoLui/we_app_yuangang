@@ -48,24 +48,25 @@ Page({
   //普通button-直接领取
   //点击form事件
   buttonClick: function (e) {//普通按钮
+    //埋点-点击按钮人数 rn8DYa 
+    app.defaultActivity_3('rn8DYa');
     console.log('普通button获取formId=' + e.detail.formId);
     app.formData.formId = e.detail.formId;
     if (app.user_info_data.is_new == 0) { //营运车
-      //埋点
-      app.defaultActivity('E8uTF9 ');
+    
       utilPlugins.showToast(app.toast.not_access, this, 2000);
  
       return;
     } else {                              //私家车
-      //埋点
-      app.defaultActivity_3('Jv8mGH');
+      
       //调用领取接口
       app.decryptedData_3(function () {
         if (app.user_info_data.mobile ) {//有手机号才可以调用领卡接口
           app.receiveCard_3(function (res) {
             if (res.ret == 0) {//新用户并且成功领取
+           
               wx.redirectTo({
-                url: '../one_cardReceived/one_cardReceived',
+                url: '../three_cardReceived/three_cardReceived',
               })
             } else {
               wx.hideLoading();
@@ -74,7 +75,7 @@ Page({
           });
         } else {
           wx.redirectTo({//可能由于版本过低，导致不能弹出授权弹框，所以这里跳转到输入手机号页面
-            url: '../one_phoneInput/one_phoneInput',
+            url: '../three_phoneInput/three_phoneInput',
           })
         }
       });
@@ -86,26 +87,23 @@ Page({
   //授权butttn
   //点击form提交事件
   getFormId: function (e) {
-    //埋点-点击领取按钮人数
-    if (app.user_info_data.is_new == 0) { //营运车(不会出现)
-      app.defaultActivity_3('E8uTF9 ');
-    } else {                              //私家车
-      app.defaultActivity_3('Jv8mGH');
-    }
-    //埋点-弹出授权弹框
-    app.defaultActivity_3('mo9Y3N');
+    //埋点-点击按钮人数 rn8DYa 
+    app.defaultActivity_3('rn8DYa');
+    //埋点-出现授权框人数 yOL3pu
+    app.defaultActivity_3('yOL3pu');
     console.log('授权button获取formId=' + e.detail.formId);
     app.formData.formId = e.detail.formId;
   },
   //点击领取按钮——授权登录
   getPhoneNumber: function (e) {//没有手机号
+   
     var that = this;
     if (e.detail.encryptedData && e.detail.iv) {//用户授权
       wx.showLoading({
         title: '授权中',
       })
-      //埋点-点击允许授权人数
-      app.defaultActivity_3('zYww9i');
+      //埋点-同意授权人数 qx6xFS 
+      app.defaultActivity_3('qx6xFS');
       app.user_info_data.encryptedData = e.detail.encryptedData;
       app.user_info_data.iv = e.detail.iv;
       wx.login({  //失败重新登录
@@ -118,14 +116,15 @@ Page({
               //更新过缓存，调用领取接口
               app.receiveCard_3(function (res) {
                 if (res.ret == 0) {//新用户并且成功领取
+                  
                   wx.redirectTo({
-                    url: '../one_cardReceived/one_cardReceived',
+                    url: '../three_cardReceived/three_cardReceived',
                   })
                 } else {//可能fail，也可能是success返回ret！=0
                   wx.hideLoading();
                   utilPlugins.showErrorMsg(res);
                   wx.redirectTo({
-                    url: '../one_phoneInput/one_phoneInput',
+                    url: '../three_phoneInput/three_phoneInput',
                   })
                 }
               });
@@ -134,7 +133,7 @@ Page({
                 utilPlugins.showToast(res_getMobile.msg, this, 2000);
               }
               wx.redirectTo({
-                url: '../one_phoneInput/one_phoneInput',
+                url: '../three_phoneInput/three_phoneInput',
               })
             }
           });
@@ -144,10 +143,9 @@ Page({
         }
       });
     } else {//没有授权,用户需要手动登录
-      //埋点-点击拒绝授权人数
-      app.defaultActivity_3('cbQcE2');
+     
       wx.redirectTo({
-        url: '../one_phoneInput/one_phoneInput',
+        url: '../three_phoneInput/three_phoneInput',
       })
     }
   },
