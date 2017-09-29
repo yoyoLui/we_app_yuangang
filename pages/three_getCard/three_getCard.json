@@ -1,5 +1,8 @@
 {
     "navigationBarBackgroundColor": "#000",
     "navigationBarTitleText": "元岗加油站",
-    "navigationBarTextStyle": "#fff"
+    "navigationBarTextStyle": "#fff",
+    "backgroundColor": "#000",
+    "enablePullDownRefresh": true,
+    "backgroundTextStyle": "light"
 }

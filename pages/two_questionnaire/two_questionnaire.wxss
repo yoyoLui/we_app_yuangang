@@ -1,0 +1,125 @@
+/* pages/two_questionnaire/two_questionnaire.wxss */
+
+page{
+  height: 100%;
+  background-color: #0BB1C2;
+}
+
+.content{
+  display: flex;
+  flex-direction: column;
+}
+
+.header_img{
+  width: 100%;
+  height: 344rpx;
+}
+
+.questions,.other_view_show,.submit_btn_area{
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  margin: 0 12rpx;
+}
+.other_view_hide{
+  display: none
+}
+.other_view_show{
+  display: flex
+}
+/* 文字位置设置 */
+.questions_one_title,.questions_one_title_lit,.other_title,.other_ques{
+  align-self: center;
+  text-align: center;
+  font-weight: bold;
+  letter-spacing: 0;
+}
+/* 题号样式 */
+.questions_one_title,.other_title{
+  color: #0BB1C2;
+  font-size: 32rpx;
+  margin: 48rpx 0 16rpx;
+}
+/* 题目样式 */
+.questions_one_title_lit,.other_ques{
+  color:  #333333;
+  font-size: 38rpx;
+  margin-bottom: 56rpx;
+}
+/* 问题开始 */
+.questions_list{
+    display: flex;
+    align-items: center;
+    height: 128rpx;
+    margin: 0 20rpx 16rpx; 
+    background-color: #F7F7F7;
+    border-radius:4rpx; 
+}
+/* 图片设置 */
+.item_img,.select_img{
+  width: 48rpx;
+  height: 48rpx;
+  margin-top: 53rpx;
+  margin-bottom: 38rpx;
+}
+.item_img{
+  margin-left: 16rpx;
+}
+.select_img{
+  margin-right: 16rpx;
+}
+.item_content{
+  flex: 1;
+  margin-left: 24rpx;
+  font-family: PingFangSC-Regular;
+  font-size: 34rpx;
+  color: #666666;
+  letter-spacing: 0;
+}
+.other_input{
+  display: flex;
+  background-color: #F7F7F7;
+  margin: 0 16rpx;
+  border-radius: 4rpx;
+}
+.input_text{
+  width: 100%;
+  height: 192rpx;
+  font-family: PingFangSC-Regular;
+  font-size: 34rpx;
+  color: #666666;
+  letter-spacing: 0;
+  margin: 32rpx 24rpx;
+}
+
+/* 提交按钮 */
+.submit_btn_area{
+  margin-bottom: 12rpx;
+}
+.other_btn{
+  margin: 56rpx 20rpx 126rpx;
+  height: 112rpx;
+  background-color:  #ffffff;
+  display: flex;
+  justify-content: center;
+}
+.phcolor{
+  color: #BEBEBE;
+}
+.other_btn button{
+  width: 100%;
+  background-color: #0EB2C3;
+  font-family: PingFangSC-Medium;
+  font-size: 40rpx;
+  color: #FFFFFF;
+  line-height: 112rpx;
+  letter-spacing: 0;
+}
+/* 设置按钮的禁用状态 */
+button[disabled][type="default"], wx-button[disabled]:not([type]){
+  background-color: #B0E0E6;
+  color: #fff;
+}
+
+
+

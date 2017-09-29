@@ -1,0 +1,9 @@
+<!--pages/two_questionnaire_success/two_questionnaire_success.wxml-->
+<view class='content'>
+  <view class='image'>
+    <image src='https://img.ejiayou.com/xiaochengxu_comment/pic_success.png' class='success_image'/>  
+  </view>
+  <view class='success_btn' bindtap='submit'>
+    <text class='ok_text'>我知道了</text>
+  </view>
+</view>

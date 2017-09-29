@@ -1,21 +1,22 @@
 var server = 'https://yifenshe.top';
-//var server = 'https://dev.ejiayou.com';
+// var server = 'https://dev.ejiayou.com';
 
 App({
+  //问卷数据源
+  questionnaire_data: null,
+  //提交成功获取的展示数据
+  questionnaire_success_data: null,
+  push_id: 0,
   login_data: null,
   user_info_data: {
-   
+
   },
   from_data: {
     from_source: -1,
   },
   group_data: {
   },
-  check_login: {
-    hasLogin: false,
-    hasGetLocation: false,
-    hasGetUserInfo: false
-  },
+
   toast: {
     is_repeat: 0,
     not_access: ''
@@ -30,7 +31,7 @@ App({
   onLaunch: function (option) {
     console.log('onlaunch option is ' + JSON.stringify(option));
 
-   
+
     var that = this;
     that.SystemInfo = wx.getSystemInfoSync();
     wx.showLoading({
@@ -60,7 +61,11 @@ App({
   })(server),
   server_api_2: (function (protocol) {
     return {
-      applet_activity: protocol + '/activity/experience/service/mini_apps/applet_activity/add'
+      applet_activity: protocol + '/activity/experience/service/mini_apps/applet_activity/add',
+      questionnaire_activity: protocol + '/activity/gift/service/mini_apps/comment_info/get',
+      questionnaire_activity_submit: protocol + '/activity/gift/service/mini_apps/comment/submit',
+      questionnaire_activity_get_phone: protocol + '/activity/gift/service/mini_apps/user_info/get',
+      questionnaire_activity_add_push: protocol + '/activity/gift/service/mini_apps/applet_activity/add'
     }
   })(server),
   server_api_3: (function (protocol) {
@@ -165,7 +170,7 @@ App({
     })
   },
 
- 
+
   //************************************小程序分割线*************************************** */
   //获取验证码
   getSmsCode: function (mobile, fn) {
@@ -426,7 +431,6 @@ App({
             key: 'user_info_data',
             success: function (stg_data) {
               if (stg_data) {
-                console.log('getStorage=' + JSON.stringify(stg_data.data));
                 that.user_info_data.user_id = stg_data.data.user_id;
                 that.user_info_data.union_id = stg_data.data.union_id;
                 that.user_info_data.open_id = stg_data.data.open_id;
@@ -517,36 +521,36 @@ App({
       success: function (res) {
         res = res.data;
         console.log('领卡返回res=' + JSON.stringify(res));
-        //更新缓存中的mobile
-        wx.getStorage({
-          key: 'user_info_data',
-          success: function (stg_data) {
-            var stg;
-            stg = stg_data.data;
-            if (that.user_info_data.mobile) {
-              stg.mobile = that.user_info_data.mobile;//重置缓存中的手机号
-            }
-            wx.setStorage({
-              key: 'user_info_data',
-              data: stg,
-              complete: function () {
-                if (res.ret == 0) {
+        if (res.ret == 0) {
+          //更新缓存中的mobile
+          wx.getStorage({
+            key: 'user_info_data',
+            success: function (stg_data) {
+              var stg;
+              stg = stg_data.data;
+              if (that.user_info_data.mobile) {
+                stg.mobile = that.user_info_data.mobile;//重置缓存中的手机号
+              }
+              wx.setStorage({
+                key: 'user_info_data',
+                data: stg,
+                complete: function () {
                   if (fn) {
                     fn(res);
                   }
-                } else {
-                  that.util.showErrorMsg(res);
-
                 }
+              })
+            },
+            fail: function () {
+              if (fn) {
+                fn(res);
               }
-            })
-          },
-          fail: function () {
-            if (fn) {
-              fn(res);
             }
-          }
-        })
+          })
+        } else {
+          that.util.showErrorMsg(res);
+
+        }
       },
       fail: function (res) {
         console.log('领卡接口2失败');
@@ -565,8 +569,8 @@ App({
       _this.setData({ isShowToast: false });
     }, count);
   },
-//*****************************************小程序3**********************************************//
- //根据encryptedData、code获取用户账号信息
+  //***********************************小程序3**********************************************//
+  //根据encryptedData、code获取用户账号信息
   decryptedData_3: function (fn) {
     console.log('进入解密接口');
     var that = this;
@@ -713,7 +717,7 @@ App({
   //判断进入哪个页面
   initView_3: function (fn) {
     var that = this;
-    console.log('进入初始化页面接口 url=' + JSON.stringify(that.server_api.init_view));
+    console.log('进入初始化页面接口 url=' + JSON.stringify(that.server_api_3.init_view));
     that.getStorage_user_info_data_3(function (options) {
       console.log('初始化页面的接口，options=' + JSON.stringify(options));
       wx.request({
@@ -733,9 +737,17 @@ App({
                 that.user_info_data.union_id = stg_data.data.union_id;
                 that.user_info_data.open_id = stg_data.data.open_id;
                 that.user_info_data.mobile = stg_data.data.mobile;
+                if (res.ret == 0) {
+                  if (fn) {
+                    fn(res);
+                  }
+                } else {
+                  that.util.showErrorMsg(res);
+                }
               }
+
             },
-            complete: function () {
+            fail: function () {
               if (res.ret == 0) {
                 if (fn) {
                   fn(res);
@@ -819,36 +831,37 @@ App({
       success: function (res) {
         res = res.data;
         console.log('领卡返回res=' + JSON.stringify(res));
-        //更新缓存中的mobile
-        wx.getStorage({
-          key: 'user_info_data_3',
-          success: function (stg_data) {
-            var stg;
-            stg = stg_data.data;
-            if (that.user_info_data.mobile) {
-              stg.mobile = that.user_info_data.mobile;//重置缓存中的手机号
-            }
-            wx.setStorage({
-              key: 'user_info_data_3',
-              data: stg,
-              complete: function () {
-                if (res.ret == 0) {
+        if (res.ret == 0) {
+          //更新缓存中的mobile
+          wx.getStorage({
+            key: 'user_info_data_3',
+            success: function (stg_data) {
+              var stg;
+              stg = stg_data.data;
+              if (that.user_info_data.mobile) {
+                stg.mobile = that.user_info_data.mobile;//重置缓存中的手机号
+              }
+              wx.setStorage({
+                key: 'user_info_data_3',
+                data: stg,
+                complete: function () {
                   if (fn) {
                     fn(res);
                   }
-                } else {
-                  that.util.showErrorMsg(res);
-
                 }
+              })
+            },
+            fail: function () {
+              if (fn) {
+                fn(res);
               }
-            })
-          },
-          fail: function () {
-            if (fn) {
-              fn(res);
             }
-          }
-        })
+          })
+        } else {
+          that.util.showErrorMsg(res);
+
+        }
+
       },
       fail: function (res) {
         console.log('领卡接口2失败');
@@ -953,5 +966,86 @@ App({
       }
     })
   },
+  // 上传车牌，手机号
+    uploadCarNum: function (e,carNum, formId, mobile, is_auth) {
+    var that = this;
+    if(e) {
+      var code = that.login_data.code;
+      var iv = e.detail.iv;
+      var encrypt_data = e.detail.encryptedData;
+    } else {
+      var code = that.login_data.code;
+      var iv = "";
+      var encrypt_data = "";
+    }
+    console.log(code + "=" + iv + "=" + encrypt_data + "=" + formId + "=" + carNum + "=" + that.user_info_data.open_id + "=" + that.user_info_data.union_id + "=" + mobile + "=" + is_auth);
+    wx.request({
+      url: that.server_api_2.questionnaire_activity_add_push,
+      data: {
+        // 这三个是允许授权获取到的
+        code: code,
+        iv:iv,
+        encrypt_data: encrypt_data,
+        form_id:formId,
+        car_num: carNum,
+        open_id: that.user_info_data.open_id,
+        union_id: that.user_info_data.union_id,
+        mobile: mobile,
+        is_auth: is_auth
+      },
+      success:function(res) {
+        console.log("发送推送任务接口↓↓↓");
+        console.log(res.data.msg);
+        if(res && res.data.ret == 0) {
+          var reg_id = res.data.data.reg_id;
+          console.log("reg_id↓↓↓")
+          console.log(reg_id)
+          that.sendPush(reg_id, mobile, carNum)
+        } else {
+          wx.hideLoading();
+          wx.showToast({
+            title: res.data.msg,
+            image: '',
+            duration: 1000
+          })
+        }
+      },
+      fail: function(res) {
+        wx.hideLoading();
+        console.log('获取手机号，车牌号失败');
+        console.log(res);
+      }
+    })
+  },
+  //发送推送(暂时未用，参数不全)
+    sendPush: function (reg_id, mobile, carNum) {
+    var txt = mobile + ":" + carNum;
+    wx.request({
+      method: "POST",
+      url: 'https://api.ejiayou.com/activity/api/app/push_msg/send',
+      data: {
+        regIds: reg_id,
+        msgContent: txt,
+        contentType: 'ejiayou://stationList',
+        msgType: '2',
+        type: '2',
+        carNum: '',
+        isVip: '1'
+      },
+      success: function (res) {
+        wx.hideLoading();
+        console.log("发送推送结果↓↓↓")
+        console.log(res)
+        wx.reLaunch({
+          url: '../two_success/two_success',
+        })
+      },
+      fail: function (res) {
+        wx.hideLoading();
+        console.log("发送推送失败↓↓↓")
+        console.log(res)
+      }
+    })
+  }
 })
 

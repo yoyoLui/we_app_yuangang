@@ -151,14 +151,14 @@ Page({
     if (that.data.button_disabled == '') {//如果按钮激活
       //埋点-输入手机号等点击立即领取人数	
       app.defaultActivity('5GaIgB');
-      app.decryptedData(function () {
-        app.user_info_data.mobile = that.data.mobile;
-        app.receiveCard2(that.data.sms_code, function () {
-          wx.redirectTo({
-            url: '../one_cardReceived/one_cardReceived',
-          })
-        });
+      // app.decryptedData(function () {
+      app.user_info_data.mobile = that.data.mobile;
+      app.receiveCard2(that.data.sms_code, function () {
+        wx.redirectTo({
+          url: '../one_cardReceived/one_cardReceived',
+        })
       });
+      // });
 
 
     }

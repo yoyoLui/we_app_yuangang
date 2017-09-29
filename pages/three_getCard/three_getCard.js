@@ -7,6 +7,13 @@ Page({
   onLoad: function () {
     wx.hideLoading();
     var that = this;
+    console.log('app.user_info_data='+JSON.stringify(app.user_info_data));
+    // wx.getStorage({
+    //   key: 'initview3_res',
+    //   success: function(res) {
+        
+    //   },
+    // })
     console.log('mobile=' + app.user_info_data.mobile);
     console.log('is_new=' + app.user_info_data.is_new);
 
@@ -155,8 +162,7 @@ Page({
   },
 
   onShow: function () {
-    //隐藏转发按钮
-    wx.hideShareMenu();
+    
     wx.hideNavigationBarLoading();
   },
 
@@ -166,5 +172,24 @@ Page({
 
   onReachBottom: function () { },
 
-  onShareAppMessage: function () { }
+  onShareAppMessage: function (res) {
+    if (res.from === 'menu') {
+      // 来自页面内转发按钮
+      console.log(res.target)
+    }
+    return {
+      title: '送您一张专属加油券，点此领取',
+      path: '/pages/index/index?from_source=2',
+      success: function (res) {
+        wx.showToast({
+          title: '转发成功',
+        })
+      },
+      fail: function (res) {
+        wx.showToast({
+          title: '转发成功',
+        })
+      }
+    }
+   }
 })

@@ -6,7 +6,7 @@
   <view class="plate_input">
     <!-- 文字 -->
     <view class="plate_txt">
-      <input class="plate_txt_input" value="粤" focus="{{txtInput}}" type="text" placeholder="粤" placeholder-style="color:rgba(12,17,19,0.22)" maxlength="1" bindinput="bindTxtInput"/>
+      <input class="plate_txt_input" value="{{numInputText}}" focus="{{txtInput}}" type="text" placeholder="粤" placeholder-style="color:rgba(12,17,19,0.22)" maxlength="1" bindinput="bindTxtInput"/>
     </view>
     <!-- 数字 -->
     <view class="plate_num">
@@ -18,7 +18,9 @@
   <!-- 车牌输入框end -->
   <!-- 点击按钮start -->
   <view class="btn_area">
-    <button disabled="{{disabled}}" bindtap="collect_gifts" hover-class="button-hover" class="collect_gifts_btn_2" open-type="{{getPhoneNumber}}" bindgetphonenumber= "{{getPhoneNumber}}">立即领取</button>
+    <form report-submit='true' bindsubmit='collect_gifts'>
+    <button disabled="{{disabled}}" hover-class="button-hover" class="collect_gifts_btn_2" open-type="{{getPhoneNumber}}" bindgetphonenumber= "{{getPhoneNumber}}" form-type='submit'>立即领取</button>
+    </form>
   </view>
   <!-- 点击按钮end -->
 

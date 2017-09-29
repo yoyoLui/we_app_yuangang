@@ -21,10 +21,10 @@ Page({
   },
 
   onShow: function () {
+    wx.hideShareMenu();
     wx.hideLoading();
     wx.hideNavigationBarLoading();
-    //隐藏转发按钮
-    wx.hideShareMenu()
+
   },
   //页面加载
   onLoad: function (option) {
@@ -149,17 +149,15 @@ Page({
       return;
     }
     if (that.data.button_disabled == '') {//如果按钮激活
-    
-      app.decryptedData_3(function () {
-        debugger;
-        app.user_info_data.mobile = that.data.mobile;
-        app.receiveCard2_3(that.data.sms_code, function () {
-         
-          wx.redirectTo({
-            url: '../three_cardReceived/three_cardReceived',
-          })
-        });
+
+      //app.decryptedData_3(function () {
+      app.user_info_data.mobile = that.data.mobile;
+      app.receiveCard2_3(that.data.sms_code, function () {
+        wx.redirectTo({
+          url: '../three_cardReceived/three_cardReceived',
+        })
       });
+      //});
 
 
     }

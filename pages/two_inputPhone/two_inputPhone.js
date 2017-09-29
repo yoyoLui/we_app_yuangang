@@ -31,10 +31,9 @@ Page({
     } else {
       result = false;
     }
-    //检查按钮是否可被点击
-    checkBtnDisable();
   },
-  collect: function () {
+  collect: function (e) {
+    var formId = e.detail.formId;
     if (phoneNum == null || !result) {
       wx.showToast({
         title: '请先输入正确的手机号',
@@ -42,72 +41,9 @@ Page({
       })
       return;
     }
-    wx.showToast({
-      title: '正在请求',
-      icon: 'loading'
+    wx.showLoading({
+      title: '正在领取中...',
     })
-    decodeEncrypt_data(phoneNum)
+    app.uploadCarNum('', plateNum, formId, phoneNum, 0)
   }
 })
-
-//解密Encrypt_data
-function decodeEncrypt_data(mobile) {
-  console.log('decodeEncrypt_data url=' + app.server_api_2.applet_activity);
-  var mCode = wx.getStorageSync('code');
-  wx.request({
-    url: app.server_api_2.applet_activity,
-    method: "GET",
-    data: {
-      code: mCode,
-      car_num: plateNum,
-      is_auth: 0,
-      mobile: mobile
-    },
-    success: function (res) {
-      console.log(res)
-      //发送推送
-      if (res.data.ret == 0) {
-        sendPush(mobile);
-      } else if (res.data.ret != 0) {
-        wx.showToast({
-          title: res.data.msg,
-        })
-      } else {
-        wx.showToast({
-          title: '数据异常,请重试',
-        })
-      }
-    },
-    fail: function (e) {
-      console.log(e);
-      wx.showToast({
-        title: '领取失败,请重试',
-      })
-    }
-  })
-}
-function sendPush(mobile) {
-  var txt = mobile + ":" + plateNum;
-  wx.request({
-    method: "POST",
-    url: 'https://api.ejiayou.com/activity/api/app/push_msg/send',
-    data: {
-      regIds: '1104a897929ca8090f1',
-      msgContent: txt,
-      contentType: 'ejiayou://stationList',
-      msgType: '2',
-      type: '2',
-      carNum: '',
-      isVip: '1'
-    },
-    success: function (res) {
-      console.log(res)
-      wx.reLaunch({
-        url: '../two_success/two_success',
-      })
-    },
-    fail: function (res) {
-      console.log(res)
-    }
-  })
-}

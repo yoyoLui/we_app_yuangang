@@ -1,0 +1,27 @@
+<!--pages/two_questionnaire_result/two_questionnaire_result.wxml-->
+<view class='content'>
+  <!-- 评价头部开始 -->
+  <view class='header'>
+    <image class='header_img' src='https://img.ejiayou.com/xiaochengxu_comment/pic_last.png'/>
+  </view>
+  <!-- 评价头部结束 -->
+  <view class='middle'>
+    <view class='result'>
+    <block wx:for="{{results}}">
+      <view class='title'>
+        <text class='title_text'>{{item.commet_title}}</text>
+      </view>
+      <view class='item'>
+        <view class='item_image' wx:if="{{item.showImage == true}}">
+          <image src='{{item.img_url}}' class='image'/>
+        </view>
+        <view wx:else>
+        </view>
+        <view class='item_text'>
+          <text class='text'>{{item.commet}}</text>
+        </view>
+      </view>
+    </block>
+  </view>
+  </view>
+</view>

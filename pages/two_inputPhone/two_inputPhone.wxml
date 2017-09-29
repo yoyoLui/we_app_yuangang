@@ -5,6 +5,8 @@
     <input class="phont_et" type="number" bindinput="bindKeyInput" maxlength="11" focus="true" />
   </view>
   <view class="btn-area">
-    <button bindtap="collect" class="collect_gifts_btn" hover-class="button-hover">立即领取</button>
+    <form report-submit='true' bindsubmit='collect'>
+      <button class="collect_gifts_btn" hover-class="button-hover" form-type='submit'>立即领取</button>
+    </form>
   </view>
 </view>

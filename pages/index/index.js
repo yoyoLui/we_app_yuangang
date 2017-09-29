@@ -14,13 +14,17 @@ Page({
     audting: false,
     bk_checked_image: "https://img.ejiayou.com/experience_app_img/card_orange@2x.png",
     mycard_checked_image: "https://img.ejiayou.com/experience_app_img/mine_grey@2x.png",
-    navigate_url: ""
+    navigate_url: "",
+    check_login: {
+      hasLogin: false,
+      hasGetLocation: false,
+      hasGetUserInfo: false
+    }
   },
 
   onLoad: function (options) {
     console.log('options=' + JSON.stringify(options));
     //开关
-    //app.from_data.channel_no = 1;
     //options.from_source = 0;//200元卡
     //options.from_source = 1;//输入车牌号领取礼物
     //options.from_source = 2;//客服小号
@@ -59,12 +63,18 @@ Page({
         if (undefined != options && undefined != options.from_source) {
           app.from_data.from_source = options.from_source;
         }
-        that.toActivity_card2();
-        return;
+
+        if (options.push_id) {
+          app.push_id = options.push_id;
+          that.goQuestionnaireActivity();
+        } else {
+          that.toActivity_card2();
+          return;
+        }
       }
       //客服小号
       if (options.from_source == 2) {
-          app.from_data.from_source = options.from_source;
+        app.from_data.from_source = options.from_source;
         that.toActivity_customerService();
         return;
       }
@@ -76,7 +86,6 @@ Page({
       that.data.is_index = true;
       app.is_index = true;
     }
-
     if (app.from_data.from_source == -1) {
       that.data.is_index = true;
       app.is_index = true;
@@ -100,6 +109,7 @@ Page({
   onHide: function () {
     // 页面隐藏
   },
+
   onUnload: function () {
     // 页面关闭
   },
@@ -218,12 +228,47 @@ Page({
 
             }
           })
-
         });
-
+      }
+    });
+  },
+  //问卷调查
+  goQuestionnaireActivity:function() {
+    console.log('有进入问卷调查活动事件toActivity');
+    var that = this;
+    //获取登录信息
+    wx.login({
+      success: function (login_data) {
+        console.log('login is' + JSON.stringify(login_data));
+        app.login_data = login_data;
+        that.data.check_login.hasLogin = true;
       }
     });
 
+    wx.getUserInfo({//首先跟微信拿user_info_data,然后decryptedData跟后端获取用户完整信息
+      success: function (user_info_data) {
+        app.user_info_data = user_info_data;
+        that.data.check_login.hasGetUserInfo = true;
+      },
+      fail: function (res) {
+        wx.hideLoading();
+        weApi.openSettingSuccess(function () {
+          wx.getUserInfo({//首先跟微信拿user_info_data,然后decryptedData跟后端获取用户完整信息
+            success: function (user_info_data) {
+              app.user_info_data = user_info_data;
+              that.data.check_login.hasGetUserInfo = true;
+            },
+          });
+        });
+      }
+    })
+    var _timer = setInterval(function () {
+      if (that.data.check_login.hasLogin && that.data.check_login.hasGetUserInfo) {
+        clearInterval(_timer);
+        console.log('进入问卷调查成功');
+        that.getQuestionnaire(that);
+      }
+    }, 10);
   },
 
   //进入红包活动
@@ -236,7 +281,8 @@ Page({
       success: function (login_data) {
         console.log('login is' + JSON.stringify(login_data));
         app.login_data = login_data;
-        app.check_login.hasLogin = true;
+        that.data.check_login.hasLogin = true;
+        that.setData(that.data);
       }
     });
 
@@ -244,8 +290,9 @@ Page({
     wx.getUserInfo({//首先跟微信拿user_info_data,然后decryptedData跟后端获取用户完整信息
       success: function (user_info_data) {
         app.user_info_data = user_info_data;
-        app.check_login.hasGetUserInfo = true;
 
+        that.data.check_login.hasGetUserInfo = true;
+        that.setData(that.data);
       },
       fail: function (res) {
         wx.hideLoading();
@@ -253,17 +300,16 @@ Page({
           wx.getUserInfo({//首先跟微信拿user_info_data,然后decryptedData跟后端获取用户完整信息
             success: function (user_info_data) {
               app.user_info_data = user_info_data;
-              app.check_login.hasGetUserInfo = true;
+              that.data.check_login.hasGetUserInfo = true;
+              that.setData(that.data);
             },
           });
         });
       }
     })
-    
-
 
     var _timer = setInterval(function () {
-      if (app.check_login.hasLogin && app.check_login.hasGetUserInfo) {
+      if (that.data.check_login.hasLogin && that.data.check_login.hasGetUserInfo) {
         clearInterval(_timer);
         console.log('进入initController条件成功');
         that.initController();
@@ -285,6 +331,8 @@ Page({
         app.user_info_data.user_id = res.data.user_id;
         app.user_info_data._k = res.data._k;
         app.toast.not_access = res.data.content;
+        console.log('跳转页面之前 app.user_info_data=' + JSON.stringify(app.user_info_data));
+
         //输入手机号页面
         if (res.type == 1) {
           app.toast.old_user_not_access_msg = res.msg;
@@ -318,14 +366,17 @@ Page({
       success: function (login_data) {
         console.log('login is' + JSON.stringify(login_data));
         app.login_data = login_data;
-        app.check_login.hasLogin = true;
+        that.data.check_login.hasLogin = true;
+        that.setData(that.data);
       }
     });
 
     wx.getUserInfo({//首先跟微信拿user_info_data,然后decryptedData跟后端获取用户完整信息
       success: function (user_info_data) {
         app.user_info_data = user_info_data;
-        app.check_login.hasGetUserInfo = true;
+        console.log('success打印user_info_data,打印that.data.check_login.hasGetUserInfo=' + that.data.check_login.hasGetUserInfo);
+        that.data.check_login.hasGetUserInfo = true;
+        that.setData(that.data);
       },
       fail: function (res) {
         wx.hideLoading();
@@ -333,7 +384,9 @@ Page({
           wx.getUserInfo({//首先跟微信拿user_info_data,然后decryptedData跟后端获取用户完整信息
             success: function (user_info_data) {
               app.user_info_data = user_info_data;
-              app.check_login.hasGetUserInfo = true;
+              console.log('fail打印user_info_data');
+              that.data.check_login.hasGetUserInfo = true;
+              that.setData(that.data);
             },
           });
         });
@@ -341,7 +394,7 @@ Page({
     })
 
     var _timer = setInterval(function () {
-      if (app.check_login.hasLogin && app.check_login.hasGetUserInfo) {
+      if (that.data.check_login.hasLogin && that.data.check_login.hasGetUserInfo) {
         clearInterval(_timer);
         console.log('进入initController条件成功');
         that.initController3();
@@ -363,8 +416,9 @@ Page({
         app.user_info_data.user_id = res.data.user_id;
         app.user_info_data._k = res.data._k;
         app.toast.not_access = res.data.content;
-        //埋点-进入页面人数 zXtCFA 
+        //埋点-进入页面人数 zXtCFA
         app.defaultActivity_3('zXtCFA');
+        console.log('跳转页面之前 app.user_info_data=' + JSON.stringify(app.user_info_data));
         //输入手机号页面
         if (res.type == 1) {
           app.toast.old_user_not_access_msg = res.msg;
@@ -381,6 +435,48 @@ Page({
 
     });
   },
-
-
+  //获取问卷接口
+  getQuestionnaire: function(that) {
+    var that = that
+    wx.request({
+      method: 'POST',
+      url: app.server_api_2.questionnaire_activity,
+      data: {
+        encrypt_data: app.user_info_data.encryptedData,
+        code: app.login_data.code,
+        iv: app.user_info_data.iv,
+        push_id: app.push_id
+      },
+      success: function (res) {
+        console.log("/activity/gift/service/mini_apps/comment_info/get");
+        console.log(res);
+        if (res && res.data.ret != 0) {
+          app.showToast(res.data.msg, that, 2000);
+          return;
+        }
+        app.questionnaire_data = res;
+        app.questionnaire_data = res;
+        app.user_info_data.union_id = res.data.data.union_id;
+        app.user_info_data.open_id = res.data.data.open_id;
+        if (undefined != res && res.data.data.type == 1 && res.data.ret == 0) {
+          console.log('有进入问卷页面');
+          wx.redirectTo({
+            url: '../two_questionnaire/two_questionnaire',
+          })
+        }
+        if (undefined != res && res.data.data.type == 2 && res.data.ret == 0) {
+          console.log('有进入问卷页面结果');
+          app.questionnaire_success_data = res
+          wx.redirectTo({
+            url: '../two_questionnaire_result/two_questionnaire_result',
+          })
+        }
+      },
+      fail: function () {
+        wx.showLoading({
+          title: '数据加载失败',
+        })
+      }
+    })
+  }
 })

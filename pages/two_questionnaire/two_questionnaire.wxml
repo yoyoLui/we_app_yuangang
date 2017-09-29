@@ -1,0 +1,68 @@
+<!--pages/two_questionnaire/two_questionnaire.wxml-->
+<view class='content'>
+  <!-- 评价头部开始 -->
+  <view class='header'>
+    <image class='header_img' src='https://img.ejiayou.com/xiaochengxu_comment/pic_first.png'/>
+  </view>
+  <!-- 评价头部结束 -->
+  <!-- 评论问题开始 -->
+  <view class='questions'>
+    <block wx:for="{{model}}">
+      <view class='model_list' id='{{index}}' bindtap='selectClick'>
+        <!-- 题号 -->
+        <view  class='questions_one_title'>
+          <text>{{index+1}}/{{model.length + modelInput.length}}</text>
+        </view>
+         <!-- 题号 -->
+         <!-- 标题 -->
+        <view class='questions_one_title_lit'>
+          <text>{{item.commet_title}}</text>
+        </view>
+        <!-- 标题 -->
+        <!-- 每个item的问题列表 -->
+        <view>
+          <block wx:for="{{item.items}}">
+            <view class='questions_list' bindtap='selectItemClick' id='{{index}}'>
+              <view>
+                <image class='item_img' src='{{item.img_url}}' />
+              </view>
+              <view class='item_content'>
+                <text>{{item.content}}</text>
+              </view>
+              <view wx:if="{{item.selectImage==true}}" >
+                <image src='https://img.ejiayou.com/xiaochengxu_comment/select_yes.png' class='select_img' />
+              </view>
+              <view wx:else>
+                <image src='https://img.ejiayou.com/xiaochengxu_comment/select_no.png' class='select_img' />  
+              </view>
+            </view>
+          </block>
+        </view>
+        <!-- 每个item的问题列表 --> 
+      </view>
+    </block>
+  </view>
+  <!-- 评论问题结束 -->
+  <!-- 其他想说的开始 -->
+  <view class="{{isShow?'other_view_show':'other_view_hide'}}">
+    <block wx:for="{{modelInput}}">
+      <view bindtap='selectItemInputClick' id='{{index}}'>
+        <view class='other_title'>
+          <text>{{model.length+modelInput.length}}/{{model.length+modelInput.length}}</text>
+        </view>
+        <view class='other_ques'>
+          <text>{{item.commet_title}}</text>
+        </view>
+        <view class='other_input' bindtap='clickInput'>
+          <textarea class='input_text' placeholder='写点什么吧...' bindinput='otherInput' focus='{{inputEnable}}' cursor-spacing="180" placeholder-class="phcolor"/> 
+        </view>
+      </view>
+    </block>
+  </view>
+  <!-- 其他想说的结束 -->
+  <view class='submit_btn_area'>
+    <view class='other_btn' bindtap='submit'>
+      <button disabled='{{disabled}}'>提交</button>
+    </view>
+  </view>
+</view>

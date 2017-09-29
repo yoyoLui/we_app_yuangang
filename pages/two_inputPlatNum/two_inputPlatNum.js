@@ -1,4 +1,5 @@
 // pages/inputPlatNum/inputPlatNum.js
+var weApi = require('../../utils/weApi');
 var inputValue;
 var encryptedData = null;
 var code;
@@ -10,6 +11,8 @@ var isDel = true;
 var app = getApp();
 //给默认值
 var txtInputV = "粤",numInputV;
+//手机号或者车牌号
+var mobile, carNum, formId;
 Page({
 
   /**
@@ -17,8 +20,9 @@ Page({
    */
   data: {
     txtInput:false,
-    numInput:false,
+    numInput: false,
     numInputValue:"",
+    numInputText:"粤",
     getPhoneNumber: '',
     isShowToast: false,
     disabled: true
@@ -29,9 +33,20 @@ Page({
   },
   //领取礼物点击事件
   collect_gifts: function (e) {
+    //formId
+    console.log("formId")
+    console.log(e.detail.formId)
+    formId = e.detail.formId;
     console.log(inputValue)
     checkPlatNum(this);
     console.log(inputValue);
+    //有手机号直接调用接口，不用授权传0
+    if(mobile) {
+      wx.showLoading({
+        title: '正在领取中...',
+      })
+      app.uploadCarNum('', inputValue, formId, mobile, 0)
+    }
   },
   //文字输入框
   bindTxtInput: function(e) {
@@ -110,16 +125,27 @@ Page({
     }
     console.log(e);
     if (encryptedData == "" || encryptedData == undefined || !isMobile) {
+      //取消授权
       wx.navigateTo({
         url: '../two_inputPhone/two_inputPhone?plateNum=' + inputValue + '&isMobile=' + isMobile,
       })
     } else {
+      //允许授权
       wx.showToast({
         title: '正在请求',
         icon: 'loading',
         duration: 3000
       })
-      decodeEncrypt_data(e,this);
+      // 发送推送模板任务
+      wx.login({
+        success:function(res) {
+          app.login_data = res;
+          wx.showLoading({
+            title: '正在领取中...',
+          })
+          app.uploadCarNum(e, inputValue, formId, mobile, 1)
+        }
+      })
     }
   }
 })
@@ -137,6 +163,10 @@ function checkPlatNum(that) {
       getPhoneNumber: ''
     })
     return;
+  } else if (undefined != mobile && mobile != "") {
+    that.setData({
+      getPhoneNumber: ''
+    })
   } else {
     that.setData({
       getPhoneNumber: 'getPhoneNumber'
@@ -145,81 +175,95 @@ function checkPlatNum(that) {
 }
 
 //登录
-function login(that) {
+function login(that){
   var that = that
   wx.login({
-    success: function (res) {
-      console.log(res.code)
-      code = res.code;
-      //存储code
-      wx.setStorageSync('code', code)
-    },
-    fail: function () {
-      app.showToast("登录失败,请重试", this, 2000);
-    }
-  })
-}
-
-//解密Encrypt_data
-function decodeEncrypt_data(res,that) {
-  var that = that
-  console.log('decodeEncrypt_data url=' + app.server_api_2.applet_activity);
-  wx.request({
-    url: app.server_api_2.applet_activity,
-    method: "GET",
-    data: {
-      encrypt_data: encryptedData,
-      code: code,
-      iv: res.detail.iv,
-      car_num: inputValue,
-      is_auth: 1
-    },
-    success: function (res) {
-      console.log(res)
-      //发送推送
-      if (res.data.ret == 0) {
-        var mobile = res.data.mobile;
-        if (mobile == "" || mobile == undefined) {
-          wx.navigateTo({
-            url: '../two_inputPhone/two_inputPhone?plateNum=' + inputValue + '&isMobile=noMobile',
-          })
-          return;
-        }
-        sendPush(mobile);
-      } else {
-        app.showToast("数据异常,请重试", that, 2000);
-      }
-    },
-    fail: function () {
-      app.showToast("数据异常,请重试", that, 2000);
-    }
-  })
-}
-function sendPush(mobile) {
-  var txt = mobile + ":" + inputValue;
-  wx.request({
-    method: "POST",
-    url: 'https://api.ejiayou.com/activity/api/app/push_msg/send',
-    data:{
-      regIds: '1104a897929ca8090f1',
-      msgContent: txt,
-      contentType:'ejiayou://stationList',
-      msgType:'2',
-      type:'2',
-      carNum:'',
-      isVip:'1'
-    },
-    success: function (res) {
-      console.log(res)
-      wx.reLaunch({
-        url: '../two_success/two_success',
+    success:function(res) {
+     code = res.code;
+     app.login_data = res;
+      app.checkSession(function() {
+        wx.getUserInfo({
+          success:function(user_info) {
+            getPhoneAndCarNum(user_info, that);
+          },
+          fail: function (res) {
+            wx.hideLoading();
+            weApi.openSettingSuccess(function () {
+              wx.getUserInfo({//首先跟微信拿user_info_data,然后decryptedData跟后端获取用户完整信息
+                success: function (user_info_data) {
+                  app.user_info_data = user_info_data;
+                  getPhoneAndCarNum(user_info_data, that);
+                },
+              });
+            });
+          }
+        })
       })
     },
-    fail: function (res) {
-      console.log(res)
+    fail:function() {
+      wx.hideLoading()
     }
   })
 }
+//获取手机号，车牌号
+function getPhoneAndCarNum(user_info,that) {
+  wx.showLoading({
+    title: '获取数据',
+  })
+  var that = that
+     wx.request({
+       url: app.server_api_2.questionnaire_activity_get_phone,
+        data:{
+          code: code,
+          iv: user_info.iv,
+          encrypt_data: user_info.encryptedData
+        },
+        success:function(res) {
+          console.log(res)
+          var ret = res.data.ret;
+          //成功
+          if (ret != undefined && ret == 0) {
+            wx.hideLoading()
+            that.setData({
+              numInput: true,
+            })
+            carNum = res.data.data.car_num;
+            mobile = res.data.data.mobile;
+            app.user_info_data.open_id = res.data.data.open_id;
+            app.user_info_data.union_id = res.data.data.union_id;
+            console.log(mobile + "====" + carNum);
+            //设置默认是车牌号
+            setCarNum(that);
+            if (mobile) {
+              that.setData({
+                getPhoneNumber: ''
+              })
+            } else {
+              that.setData({
+                getPhoneNumber: 'getPhoneNumber'
+              })
+            }
+          } else {
+            //失败
+            app.showToast(res.data.msg, that, 2000);
+            console.log("获取手机号与车牌：" + res)
+            wx.hideLoading()
+            that.setData({
+              numInput: true,
+            })
+          }
+        },
+        fail:function(res) {
+          app.showToast(res.data.msg, that, 2000);
+          console.log("获取手机号与车牌：" + res)
+          wx.hideLoading()
+          that.setData({
+            numInput: true,
+          })
+        }
+      })
+}
+
 // 监听按钮的可选状态
 function checkBtnDisable(that) {
   var that = that
@@ -231,5 +275,36 @@ function checkBtnDisable(that) {
     that.setData({
       disabled: 'true'
     })
+  }
+}
+//拆分设置车牌
+function setCarNum(that) {
+  var that = that
+  if (carNum) {
+    //设置输入框的文字
+    inputValue = carNum;
+    var carNumTxt = carNum.substring(0, 1);
+    if (carNumTxt) {
+      that.setData({
+        numInputText: carNumTxt,
+      })
+    }
+    var carNumChar = carNum.substring(1, 2);
+    var carNumNum = carNum.substring(2, carNum.length);
+    if (carNumChar) {
+      that.setData({
+        numInputValue: carNumChar + "·" + carNumNum,
+      })
+    }
+   var carNumber = carNumChar + "·" + carNumNum;
+   if (undefined != carNumber && carNumber.length == 7) {
+     that.setData({
+       disabled:""
+     })
+    } else {
+     that.setData({
+       disabled: "true"
+     })
+    }
   }
 }

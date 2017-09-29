@@ -1,0 +1,34 @@
+/* pages/two_questionnaire_success/two_questionnaire_success.wxss */
+page{
+  height: 100%;
+  background-color: #0BB1C2;
+}
+.content{
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.image{
+  width: 100%;
+}
+.success_image{
+  width: 100%;
+  height: 344rpx;
+  margin-top: 192rpx;
+}
+.success_btn{
+  width: 392rpx;
+  height: 112rpx;
+  background-color: #FFFFFF;
+  border-radius: 2px;
+  display: flex;
+  justify-content: center;
+  margin-top: 144rpx;
+}
+.ok_text{
+  font-family: PingFangSC-Medium;
+  font-size: 40rpx;
+  color: #0EB2C3;
+  letter-spacing: 0;
+  line-height: 112rpx;
+}

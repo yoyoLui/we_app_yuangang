@@ -12,6 +12,9 @@
     "pages/two_inputPlatNum/two_inputPlatNum",
     "pages/two_inputPhone/two_inputPhone",
     "pages/two_success/two_success",
+    "pages/two_questionnaire_result/two_questionnaire_result",
+    "pages/two_questionnaire/two_questionnaire",
+    "pages/two_questionnaire_success/two_questionnaire_success",
 
     "pages/three_getCard/three_getCard",
     "pages/three_phoneInput/three_phoneInput",

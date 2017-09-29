@@ -58,11 +58,11 @@ Page({
       return;
     } else {                              //私家车
       //埋点
-      app.defaultActivity_3('Jv8mGH');
+      app.defaultActivity('Jv8mGH');
       //调用领取接口
-      app.decryptedData_3(function () {
+      app.decryptedData(function () {
         if (app.user_info_data.mobile ) {//有手机号才可以调用领卡接口
-          app.receiveCard_3(function (res) {
+          app.receiveCard(function (res) {
             if (res.ret == 0) {//新用户并且成功领取
               wx.redirectTo({
                 url: '../one_cardReceived/one_cardReceived',
@@ -88,12 +88,12 @@ Page({
   getFormId: function (e) {
     //埋点-点击领取按钮人数
     if (app.user_info_data.is_new == 0) { //营运车(不会出现)
-      app.defaultActivity_3('E8uTF9 ');
+      app.defaultActivity('E8uTF9 ');
     } else {                              //私家车
-      app.defaultActivity_3('Jv8mGH');
+      app.defaultActivity('Jv8mGH');
     }
     //埋点-弹出授权弹框
-    app.defaultActivity_3('mo9Y3N');
+    app.defaultActivity('mo9Y3N');
     console.log('授权button获取formId=' + e.detail.formId);
     app.formData.formId = e.detail.formId;
   },
@@ -105,7 +105,7 @@ Page({
         title: '授权中',
       })
       //埋点-点击允许授权人数
-      app.defaultActivity_3('zYww9i');
+      app.defaultActivity('zYww9i');
       app.user_info_data.encryptedData = e.detail.encryptedData;
       app.user_info_data.iv = e.detail.iv;
       wx.login({  //失败重新登录
@@ -113,10 +113,10 @@ Page({
           console.log('授权点击-登录成功');
           console.log(JSON.stringify(res.code));
           app.login_data.code = res.code;
-          app.decryptedData_getMobile_3(function (res_getMobile) {
+          app.decryptedData_getMobile(function (res_getMobile) {
             if (app.getPhoneNum.is_auth == 1) {//解密手机号成功
               //更新过缓存，调用领取接口
-              app.receiveCard_3(function (res) {
+              app.receiveCard(function (res) {
                 if (res.ret == 0) {//新用户并且成功领取
                   wx.redirectTo({
                     url: '../one_cardReceived/one_cardReceived',
@@ -145,7 +145,7 @@ Page({
       });
     } else {//没有授权,用户需要手动登录
       //埋点-点击拒绝授权人数
-      app.defaultActivity_3('cbQcE2');
+      app.defaultActivity('cbQcE2');
       wx.redirectTo({
         url: '../one_phoneInput/one_phoneInput',
       })
@@ -157,7 +157,6 @@ Page({
   },
 
   onShow: function () {
-    //隐藏转发按钮
     wx.hideShareMenu();
     wx.hideNavigationBarLoading();
   },
