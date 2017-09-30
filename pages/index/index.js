@@ -63,7 +63,11 @@ Page({
         if (undefined != options && undefined != options.from_source) {
           app.from_data.from_source = options.from_source;
         }
-
+        if (options.station_id) {
+          console.log("stationId↓↓↓")
+          console.log(options.station_id)
+          app.station_id = options.station_id;
+        }
         if (options.push_id) {
           app.push_id = options.push_id;
           that.goQuestionnaireActivity();

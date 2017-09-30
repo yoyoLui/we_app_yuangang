@@ -6,7 +6,8 @@ App({
   questionnaire_data: null,
   //提交成功获取的展示数据
   questionnaire_success_data: null,
-  push_id: 0,
+  push_id:0,
+  station_id: 0,
   login_data: null,
   user_info_data: {
 
@@ -978,7 +979,7 @@ App({
       var iv = "";
       var encrypt_data = "";
     }
-    console.log(code + "=" + iv + "=" + encrypt_data + "=" + formId + "=" + carNum + "=" + that.user_info_data.open_id + "=" + that.user_info_data.union_id + "=" + mobile + "=" + is_auth);
+    console.log(code + "=" + iv + "=" + encrypt_data + "=" + formId + "=" + carNum + "=" + that.user_info_data.open_id + "=" + that.user_info_data.union_id + "=" + mobile + "=" + is_auth+"="+that.station_id);
     wx.request({
       url: that.server_api_2.questionnaire_activity_add_push,
       data: {
@@ -991,6 +992,7 @@ App({
         open_id: that.user_info_data.open_id,
         union_id: that.user_info_data.union_id,
         mobile: mobile,
+        station_id: that.station_id,
         is_auth: is_auth
       },
       success:function(res) {

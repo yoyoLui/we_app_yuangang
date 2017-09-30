@@ -13,6 +13,7 @@ var app = getApp();
 var txtInputV = "粤",numInputV;
 //手机号或者车牌号
 var mobile, carNum, formId;
+var carNumIsOk = false;
 Page({
 
   /**
@@ -40,8 +41,7 @@ Page({
     console.log(inputValue)
     checkPlatNum(this);
     console.log(inputValue);
-    //有手机号直接调用接口，不用授权传0
-    if(mobile) {
+    if (mobile && carNumIsOk) {
       wx.showLoading({
         title: '正在领取中...',
       })
@@ -159,15 +159,18 @@ function checkPlatNum(that) {
   }
   if (!result || result == undefined) {
     app.showToast("请先输入正确的车牌号", that, 2000);
+    carNumIsOk = false;
     that.setData({
       getPhoneNumber: ''
     })
-    return;
-  } else if (undefined != mobile && mobile != "") {
+  } else if (mobile) {
+    //有手机号直接调用接口，不用授权传0
+    carNumIsOk = true;
     that.setData({
       getPhoneNumber: ''
     })
   } else {
+    carNumIsOk = true;
     that.setData({
       getPhoneNumber: 'getPhoneNumber'
     })
